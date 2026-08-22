@@ -102,7 +102,7 @@ Código - Nome do caso de uso - Ator(es) e Requisito relacionado
 | UC44 | Configurar opções de acessibilidade | Estudante, Professor, Administrador | RF46 |
 
 ## 3. Diagrama
-_Insira aqui a imagem do diagrama UML de casos de uso (ex: criado em draw.io ou Lucidchart), agrupando os casos de uso por módulo/pacote para facilitar a leitura visual, já que são 44 casos de uso ao todo._
+
 
 ```
 ![Diagrama de Casos de Uso](../assets/diagrama-casos-de-uso.png)
