@@ -6,11 +6,11 @@
 
  Ator - Descrição 
 
-**Estudante** - Usuário que realiza os diagnósticos, acessa trilhas de aprendizagem, participa de grupos/monitorias e se comunica via chat 
+**Estudante** - o Estudante realiza os diagnósticos, acessa as trilhas de aprendizagem, participa de grupos/monitorias e se comunica via chat 
 
-**Professor** - Usuário que gerencia turmas, cria atividades/trilhas, acompanha o desempenho da turma e supervisiona monitorias 
+**Professor** - o Professor é responsável por gerenciar as turmas, cria atividades/trilhas, acompanha o desempenho da turma e supervisiona monitorias 
 
-**Administrador** - Usuário responsável pela gestão global de usuários, permissões e parametrização da plataforma 
+**Administrador** - O administrador é responsável pela gestão global de usuários, permissões e parametrização da plataforma 
 
 > Controle de acesso baseado em perfis (RBAC), conforme RF03 e RNF06.
 
