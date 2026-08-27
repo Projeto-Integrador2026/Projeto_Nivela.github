@@ -160,5 +160,5 @@ Código - Nome do caso de uso - Ator(es) e Requisito relacionado
 
 ---
 
-> Última atualização: _(22/08/2026)_
+> Última atualização: _(27/08/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_
