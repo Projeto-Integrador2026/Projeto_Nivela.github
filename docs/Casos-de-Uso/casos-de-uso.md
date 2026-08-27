@@ -104,9 +104,9 @@ Código - Nome do caso de uso - Ator(es) e Requisito relacionado
 ## 3. Diagrama
 
 
-```
+
 ![Diagrama de Casos de Uso](../assets/diagrama-casos-de-uso.png)
-```
+
 
 ## 4. Descrição detalhada dos casos de uso críticos
 
