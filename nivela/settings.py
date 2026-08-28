@@ -86,11 +86,17 @@ DATABASES = {
     } 
 }
 
-# Parâmetros de custo do hash de senha (PBKDF2-SHA256)
-# Utilizamos o valor padrão do Django 5.2: 1.000.000 de iterações,
-# que segue as diretrizes atualizadas da OWASP para resistência a
-# ataques de força bruta em 2025+, equilibrando segurança contra
-# tempo de resposta aceitável no login.
+# Itens 1.1, 1.3 e 1.4 do requisito de autenticacao:
+# O Django gera automaticamente um salt criptografico unico por
+# usuario e armazena o hash + salt juntos no campo 'password' da
+# tabela auth_user, no formato: algoritmo$iteracoes$salt$hash.
+# Verificado manualmente via pgAdmin na tabela auth_user.
+
+# Parametros de custo do hash de senha (PBKDF2-SHA256)
+# Utilizamos o valor padrao do Django 5.2: 1.000.000 de iteracoes,
+# que segue as diretrizes atualizadas da OWASP para resistencia a
+# ataques de forca bruta em 2025+, equilibrando seguranca contra
+# tempo de resposta aceitavel no login.
 AUTH_PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
 ]
