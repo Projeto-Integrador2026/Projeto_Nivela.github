@@ -1,43 +1,33 @@
 # Diagrama de Casos de Uso — Projeto Nivela
 
-> Documento alinhado ao Termo de Abertura do Projeto (TAP) v1 e aos Requisitos Funcionais e Não Funcionais v2.
+> Documento alinhado ao Termo de Abertura do Projeto (TAP) v1 e aos Requisitos Funcionais e Não Funcionais v3.
 
 ## 1. Atores
 
- Ator - Descrição 
-
-**Estudante** - o Estudante realiza os diagnósticos, acessa as trilhas de aprendizagem, participa de grupos/monitorias e se comunica via chat 
-
-**Professor** - o Professor é responsável por gerenciar as turmas, cria atividades/trilhas, acompanha o desempenho da turma e supervisiona monitorias 
-
-**Administrador** - O administrador é responsável pela gestão global de usuários, permissões e parametrização da plataforma 
+| Ator | Descrição |
+|------|-----------|
+| **Estudante** | Usuário que realiza diagnóstico, acessa trilhas de aprendizagem, participa de grupos/monitorias e se comunica via chat |
+| **Professor** | Usuário que gerencia turmas, cria atividades/trilhas, acompanha o desempenho da turma e supervisiona monitorias |
+| **Administrador** | Usuário responsável pela gestão global de usuários, permissões e parametrização da plataforma |
+| **Responsável Legal (NOVO)** | Responsável por um estudante menor de idade; consente com o tratamento de dados e pode acompanhar o progresso do menor |
 
 > Controle de acesso baseado em perfis (RBAC), conforme RF03 e RNF06.
 
 ## 2. Casos de uso por módulo
 
 ### 2.1 Autenticação e Gestão de Perfis
-Código - Nome do caso de uso - Ator(es) e Requisito relacionado 
-
- UC01 - Cadastrar-se na plataforma: Estudante, Professor e Administrador (RF01)
- 
- UC02 - Fazer o login: Estudante, Professor e Administrador (RF02)
- 
- UC03 - Autenticação com 2FA: Estudante, Professor e Administrador  (RF07, RF08)
- 
- UC04 - Recuperar a  senha: Estudante, Professor e Administrador (RF04)
-  
- UC05 - Editar os dados do perfil: Estudante, Professor e Administrador (RF05)
- 
- UC06 - Atualização da foto de perfil: Estudante, Professor e Administrador (RF06)
- 
- UC07 - Encerrar a sessão (logout): Estudante, Professor e Administrador (RF09)
- 
- UC08 - Aceitar os Termos de Uso e Política de Privacidade: Estudante, Professor e Administrador (RF10)
- 
- UC09 - Solicitar a exclusão da conta e dos dados (LGPD): Estudante, Professor e Administrador (RF11)
- 
- UC10 - Exportar os dados pessoais (LGPD): Estudante, Professor e Administrador (RF12)
+| Código | Nome do caso de uso | Ator(es) | Requisito relacionado |
+|--------|----------------------|----------|--------------------------|
+| UC01 | Cadastrar-se na plataforma | Estudante, Professor, Administrador | RF01 |
+| UC02 | Realizar login | Estudante, Professor, Administrador | RF02 |
+| UC03 | Autenticar com 2FA *(desejável)* | Estudante, Professor, Administrador | RF07, RF08 |
+| UC04 | Recuperar senha | Estudante, Professor, Administrador | RF04 |
+| UC05 | Editar dados do perfil | Estudante, Professor, Administrador | RF05 |
+| UC06 | Atualizar foto de perfil | Estudante, Professor, Administrador | RF06 |
+| UC07 | Encerrar sessão (logout) | Estudante, Professor, Administrador | RF09 |
+| UC08 | Aceitar Termos de Uso e Política de Privacidade | Estudante, Professor, Administrador | RF10 |
+| UC09 | Solicitar exclusão da conta e dos dados (LGPD) | Estudante, Professor, Administrador | RF11 |
+| UC10 | Exportar dados pessoais (LGPD) | Estudante, Professor, Administrador | RF12 |
 
 ### 2.2 Diagnóstico e Nivelamento
 | Código | Nome do caso de uso | Ator(es) | Requisito relacionado |
@@ -59,6 +49,8 @@ Código - Nome do caso de uso - Ator(es) e Requisito relacionado
 | UC21 | Visualizar dashboard pessoal de progresso | Estudante | RF23 |
 | UC22 | Configurar conquistas e regras de pontuação | Professor, Administrador | RF24 |
 | UC23 | Enviar feedback sobre atividade/trilha | Estudante | RF25 |
+| UC45 **(NOVO)** | Submeter resposta a atividade prática | Estudante | RF47 |
+| UC46 **(NOVO)** | Corrigir e avaliar atividade prática submetida | Professor | RF48 |
 
 ### 2.4 Grupos e Monitoria entre Pares
 | Código | Nome do caso de uso | Ator(es) | Requisito relacionado |
@@ -68,6 +60,8 @@ Código - Nome do caso de uso - Ator(es) e Requisito relacionado
 | UC26 | Supervisionar grupos e monitorias | Professor | RF28 |
 | UC27 | Participar de grupo sugerido | Estudante | RF29 |
 | UC28 | Avaliar monitoria recebida | Estudante | RF30 |
+| UC47 **(NOVO)** | Receber sugestão proativa de estudante-monitor | Professor, Estudante | RF49 |
+| UC48 **(NOVO)** | Convidar estudante sugerido para monitoria | Professor, Estudante | RF49 |
 
 ### 2.5 Comunicação
 | Código | Nome do caso de uso | Ator(es) | Requisito relacionado |
@@ -101,16 +95,18 @@ Código - Nome do caso de uso - Ator(es) e Requisito relacionado
 | UC43 | Passar pelo tutorial guiado (onboarding) | Estudante, Professor, Administrador | RF45 |
 | UC44 | Configurar opções de acessibilidade | Estudante, Professor, Administrador | RF46 |
 
-## 3. Diagrama
+### 2.9 Consentimento e Acompanhamento por Responsáveis Legais (NOVO)
+| Código | Nome do caso de uso | Ator(es) | Requisito relacionado |
+|--------|----------------------|----------|--------------------------|
+| UC49 **(NOVO)** | Fornecer consentimento para tratamento de dados do menor | Responsável Legal | RF50 |
+| UC50 **(NOVO — desejável)** | Consultar progresso do estudante menor | Responsável Legal | RF51 |
 
+## 3. Diagrama
 
 
 ![Diagrama de Casos de Uso](../assets/diagrama-casos-de-uso.png)
 
-
 ## 4. Descrição detalhada dos casos de uso críticos
-
-> Aqui devem ser detalhados os casos de uso mais sensíveis/complexos — os demais podem ser descritos de forma mais breve.
 
 ### UC01 - Cadastrar-se na plataforma
 - **Atores:** Estudante, Professor, Administrador
@@ -120,7 +116,8 @@ Código - Nome do caso de uso - Ator(es) e Requisito relacionado
   2. Usuário preenche os dados solicitados e seleciona seu perfil (estudante/professor)
   3. Usuário aceita os Termos de Uso e a Política de Privacidade (UC08)
   4. Sistema valida os dados e armazena a senha com hash + salt (RNF10–RNF13)
-  5. Sistema confirma o cadastro
+  5. **Se o estudante for menor de idade**, o sistema aciona o fluxo de consentimento do responsável legal (UC49) antes de concluir o cadastro
+  6. Sistema confirma o cadastro
 - **Fluxo alternativo:**
   1. Dados inválidos → sistema exibe mensagem de erro
 
@@ -129,34 +126,52 @@ Código - Nome do caso de uso - Ator(es) e Requisito relacionado
 - **Fluxo principal:**
   1. Usuário informa e-mail e senha
   2. Sistema valida as credenciais
-  3. Sistema solicita 2FA (UC03)
+  3. **Se o 2FA estiver habilitado** (RF07, desejável), sistema solicita o segundo fator (UC03)
   4. Sistema cria a sessão com controle de acesso por perfil (RBAC)
 - **Fluxo alternativo:**
   1. Credenciais inválidas → sistema aplica proteção contra força bruta (RNF15)
 
-### UC11 - Realizar teste de diagnóstico inicial
+### UC45 - Submeter resposta a atividade prática
 - **Ator:** Estudante
-- **Pré-condições:** Estudante recém-cadastrado, ainda sem diagnóstico
+- **Pré-condições:** Estudante possui uma atividade prática disponível na trilha
 - **Fluxo principal:**
-  1. Sistema apresenta o teste de diagnóstico ao estudante
-  2. Estudante responde às questões
-  3. Sistema classifica automaticamente o nível de conhecimento (RF14)
-  4. Sistema direciona o estudante às trilhas correspondentes (UC17)
+  1. Estudante acessa a atividade prática vinculada à lição
+  2. Estudante envia a resposta (texto, arquivo ou resposta objetiva)
+  3. Sistema registra a submissão e notifica o professor (UC30)
 
-### UC24 - Receber sugestão de formação de grupo
-- **Ator:** Estudante
-- **Pré-condições:** Estudante já possui diagnóstico realizado
-- **Fluxo principal:**
-  1. Sistema analisa os níveis de conhecimento dos estudantes da turma
-  2. Sistema sugere grupos equilibrados (RF26)
-  3. Estudante pode aceitar participar do grupo sugerido (UC27)
-
-### UC33 - Criar e gerenciar turma
+### UC46 - Corrigir e avaliar atividade prática submetida
 - **Ator:** Professor
+- **Pré-condições:** Existe ao menos uma submissão pendente de correção
 - **Fluxo principal:**
-  1. Professor acessa a área de gestão de turmas
-  2. Professor cria uma nova turma e associa estudantes
-  3. Professor pode editar ou encerrar a turma
+  1. Professor acessa a lista de submissões da atividade
+  2. Professor avalia a resposta e atribui nota e/ou parecer
+  3. Sistema registra a correção e notifica o estudante (UC30)
+
+### UC47 - Receber sugestão proativa de estudante-monitor
+- **Atores:** Professor, Estudante
+- **Pré-condições:** Existem estudantes com diagnóstico avançado em algum tema
+- **Fluxo principal:**
+  1. Sistema identifica estudantes aptos com base no desempenho diagnosticado (RF14)
+  2. Sistema sugere esses estudantes como potenciais monitores para o professor e/ou colegas
+  3. Professor ou colega pode convidar o estudante sugerido (UC48)
+
+### UC49 - Fornecer consentimento para tratamento de dados do menor
+- **Ator:** Responsável Legal
+- **Pré-condições:** Estudante identificado como menor de idade no cadastro
+- **Fluxo principal:**
+  1. Sistema solicita os dados de contato do responsável legal
+  2. Sistema envia solicitação de consentimento ao responsável (RF50, art. 14 da LGPD)
+  3. Responsável legal analisa e confirma (ou recusa) o consentimento
+  4. Sistema registra a decisão com data e IP, e libera (ou bloqueia) o cadastro do menor
+- **Fluxo alternativo:**
+  1. Consentimento recusado → cadastro do estudante não é concluído
+
+### UC50 - Consultar progresso do estudante menor *(desejável)*
+- **Ator:** Responsável Legal
+- **Pré-condições:** Consentimento já concedido (UC49); vínculo entre responsável e estudante estabelecido
+- **Fluxo principal:**
+  1. Responsável legal acessa a área de acompanhamento
+  2. Sistema exibe, em modo somente leitura, o progresso e a evolução do estudante (RF51)
 
 ---
 
