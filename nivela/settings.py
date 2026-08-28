@@ -86,6 +86,16 @@ DATABASES = {
     } 
 }
 
+# Parâmetros de custo do hash de senha (PBKDF2-SHA256)
+# Utilizamos o valor padrão do Django 5.2: 1.000.000 de iterações,
+# que segue as diretrizes atualizadas da OWASP para resistência a
+# ataques de força bruta em 2025+, equilibrando segurança contra
+# tempo de resposta aceitável no login.
+AUTH_PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+]
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
