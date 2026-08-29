@@ -96,5 +96,5 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 
 ---
 
-> Última atualização: _(preencher data)_
-> Responsável pela documentação: _(seu nome)_
+> Última atualização: _(29/08/2026)_
+> Responsável pela documentação: _(Jhonathan Tonello)_
