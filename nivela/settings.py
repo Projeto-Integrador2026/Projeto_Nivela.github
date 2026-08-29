@@ -102,6 +102,12 @@ AUTH_PASSWORD_HASHERS = [
 ]
 
 
+# Configuracao de sessao (item 1.9 e 1.10)
+# Sessao expira apos 30 minutos de inatividade
+SESSION_COOKIE_AGE = 1800  # 30 minutos em segundos
+SESSION_SAVE_EVERY_REQUEST = True  # renova o tempo a cada acao do usuario
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # expira ao fechar o navegador
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
