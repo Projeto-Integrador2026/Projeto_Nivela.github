@@ -12,8 +12,8 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [ ] 1.6 Validação do 2FA após autenticação primária
 - [ ] 1.7 Fluxo de autenticação documentado
 - [ ] 1.8 Evidências funcionais (prints, logs ou testes)
-- [ ] 1.9 Sessões com tempo de expiração
-- [ ] 1.10 Invalidação de sessão no logout
+- [x] 1.9 Sessões com tempo de expiração
+- [x] 1.10 Invalidação de sessão no logout
 - [ ] 1.11 Proteção contra força bruta (rate limit, bloqueio, atraso)
 - [ ] 1.12 Justificativas técnicas documentadas
 
