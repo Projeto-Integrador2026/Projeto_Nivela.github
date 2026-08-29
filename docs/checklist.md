@@ -4,16 +4,16 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 
 ## 1. Autenticação e Gestão de Credenciais
 
-- [ ] 1.1 Uso de hash criptográfico seguro para senhas (Argon2, bcrypt ou PBKDF2)
-- [ ] 1.2 Parâmetros de custo do hash configurados e justificados
-- [ ] 1.3 Uso de salt criptográfico único por usuário
-- [ ] 1.4 Armazenamento correto do hash + salt
+- [x] 1.1 Uso de hash criptográfico seguro para senhas (Argon2, bcrypt ou PBKDF2)
+- [x] 1.2 Parâmetros de custo do hash configurados e justificados
+- [x] 1.3 Uso de salt criptográfico único por usuário
+- [x] 1.4 Armazenamento correto do hash + salt
 - [ ] 1.5 Autenticação de dois fatores (2FA) implementada
 - [ ] 1.6 Validação do 2FA após autenticação primária
 - [ ] 1.7 Fluxo de autenticação documentado
 - [ ] 1.8 Evidências funcionais (prints, logs ou testes)
-- [ ] 1.9 Sessões com tempo de expiração
-- [ ] 1.10 Invalidação de sessão no logout
+- [x] 1.9 Sessões com tempo de expiração
+- [x] 1.10 Invalidação de sessão no logout
 - [ ] 1.11 Proteção contra força bruta (rate limit, bloqueio, atraso)
 - [ ] 1.12 Justificativas técnicas documentadas
 
