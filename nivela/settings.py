@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'turmas',
     'gamificacao',
     'chat',
+    'axes',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'axes.middleware.AxesMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -148,3 +150,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Protecao contra forca bruta (item 1.11)
+AXES_FAILURE_LIMIT = 5  # bloqueia apos 5 tentativas erradas
+AXES_COOLOFF_TIME = 1  # bloqueio dura 1 hora
+AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']  # bloqueia por usuario e IP
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
