@@ -4,19 +4,14 @@
 
 ## 1.1 — Algoritmo de hash de senha
 
-**Escolha:** _(confirmar qual foi usado: Argon2, bcrypt ou PBKDF2)_
+**Justificativa**
 
-**Justificativa (exemplo com bcrypt, ajustar conforme a escolha real):**
-> Optou-se pelo uso do **bcrypt** como algoritmo de hash de senha por ser nativamente suportado pelo Django (`django.contrib.auth.hashers`), amplamente testado em produção e utilizado como padrão de mercado. O bcrypt incorpora um *fator de custo* configurável, tornando o cálculo do hash deliberadamente lento — o que dificulta ataques de força bruta e uso de hardware especializado (GPU/ASIC) — atendendo ao RNF10.
-
-> _Se o grupo optou por **Argon2** em vez de bcrypt: Argon2 é considerado o algoritmo mais moderno e resistente (vencedor da Password Hashing Competition), oferecendo proteção adicional contra ataques com GPU/hardware dedicado, por permitir configurar não só tempo de processamento, mas também consumo de memória._
+> Optou-se pelo uso do PBKDF2 como algoritmo de hash de senha por ser o algoritmo padrão nativo do Django (django.contrib.auth.hashers.PBKDF2PasswordHasher), dispensando a instalação de dependências externas — o que reduz a superfície de manutenção do projeto e está alinhado à restrição de uso de ferramentas gratuitas/open-source do RNF29. O PBKDF2 aplica múltiplas iterações de uma função hash criptográfica (SHA-256, no caso do Django), tornando o cálculo deliberadamente custoso computacionalmente e dificultando ataques de força bruta, atendendo ao RNF10. Por ser recomendado e mantido diretamente pelo próprio framework, também garante que atualizações de segurança futuras (ex: aumento do número padrão de iterações) sejam incorporadas automaticamente em novas versões do Django.
 
 ## 1.2 — Parâmetros de custo do hash
 
-**Escolha:** _(preencher com os valores reais usados no código, ex: número de iterações, custo, memória)_
-
-**Justificativa (exemplo genérico — ajustar aos valores reais):**
-> Os parâmetros de custo foram configurados em `[valor]`, seguindo a recomendação padrão da biblioteca/framework utilizado para o ano de desenvolvimento do projeto (2026), equilibrando segurança (tempo suficiente para dificultar ataques de força bruta) e desempenho aceitável para o usuário final (RNF17 — resposta em até 2 segundos). Valores mais altos aumentariam a segurança, mas comprometeriam a meta de desempenho definida no projeto.
+**Justificativa**
+> Os parâmetros de custo foram configurados em `[1000000]`, seguindo a recomendação padrão da biblioteca/framework utilizado para o ano de desenvolvimento do projeto (2026), equilibrando segurança (tempo suficiente para dificultar ataques de força bruta) e desempenho aceitável para o usuário final (RNF17 — resposta em até 2 segundos). Valores mais altos aumentariam a segurança, mas comprometeriam a meta de desempenho definida no projeto.
 
 ## 1.3 — Salt criptográfico único por usuário
 
@@ -30,10 +25,9 @@
 
 ## 1.9 — Sessões com tempo de expiração
 
-**Escolha:** _(preencher com o tempo real definido, ex: 30 minutos, 2 horas)_
 
 **Justificativa (exemplo):**
-> O tempo de expiração da sessão foi definido em `[X minutos/horas]`, equilibrando segurança (reduzir a janela de exposição em caso de sessão esquecida aberta) e usabilidade (evitar que o usuário precise fazer login com frequência excessiva durante o uso normal da plataforma), atendendo ao RNF14.
+> O tempo de expiração da sessão foi definido em `[30 minutos]`, equilibrando segurança (reduzir a janela de exposição em caso de sessão esquecida aberta) e usabilidade (evitar que o usuário precise fazer login com frequência excessiva durante o uso normal da plataforma), atendendo ao RNF14.
 
 ## 1.10 — Invalidação de sessão no logout
 
@@ -49,9 +43,6 @@
 **Recomendação técnica para quando for implementado:**
 > Sugere-se o uso de *rate limiting* (ex: biblioteca `django-ratelimit` ou `django-axes`), bloqueando temporariamente a conta ou aplicando atraso progressivo entre tentativas após um número definido de falhas consecutivas (ex: 5 tentativas), atendendo ao RNF15.
 
----
 
-> ⚠️ Os campos marcados como "preencher" precisam ser confirmados com quem está desenvolvendo o código, para que a justificativa reflita exatamente o que foi implementado.
->
-> Última atualização: _(preencher data)_
-> Responsável pela documentação: _(seu nome)_
+> Última atualização: _(29/08/2026)_
+> Responsável pela documentação: _(Jhonathan Tonello)_
