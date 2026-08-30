@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Nivela - Inicio{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-4 fw-bold">Bem-vindo ao Nivela</h1>
+    <p class="lead text-muted">
+        Plataforma do Projeto Integrador 2026.
+    </p>
+    <hr class="my-4">
+    <p>
+        Explore os modulos do sistema pelo menu acima: Turmas, Chat e Gamificacao.
+    </p>
+</div>
+
+<div class="row g-4 mt-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Turmas</h5>
+                <p class="card-text">Gerencie turmas e acompanhe o progresso dos alunos.</p>
+                <a href="/turmas/" class="btn btn-primary">Acessar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Chat</h5>
+                <p class="card-text">Converse e tire duvidas em tempo real.</p>
+                <a href="/chat/" class="btn btn-primary">Acessar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Gamificacao</h5>
+                <p class="card-text">Acompanhe pontos, conquistas e o ranking.</p>
+                <a href="/gamificacao/" class="btn btn-primary">Acessar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
