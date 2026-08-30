@@ -34,15 +34,23 @@
 **Justificativa:**
 > Ao realizar logout, a sessão do usuário é invalidada no lado do servidor (não apenas removida do navegador do cliente), impedindo que o mesmo token/cookie de sessão seja reutilizado posteriormente, mesmo que capturado por terceiros, atendendo ao RF09.
 
-## 1.5 / 1.6 — Autenticação de dois fatores (2FA) *(ainda não implementado)*
+## 1.5 / 1.6 — Autenticação de dois fatores (2FA) 
 
 > Conforme RF07 (ajustado na v3 dos requisitos), o 2FA foi classificado como requisito **desejável**, podendo ser postergado para uma versão futura caso o cronograma da disciplina não comporte sua implementação. Caso seja implementado, a validação do segundo fator deve ocorrer apenas após a autenticação primária bem-sucedida (RF08), evitando expor informação sobre a validade do 2FA antes de confirmar e-mail/senha corretos.
 
-## 1.11 — Proteção contra força bruta *(ainda não implementado)*
+## 1.11 — Proteção contra força bruta 
 
-**Recomendação técnica para quando for implementado:**
-> Sugere-se o uso de *rate limiting* (ex: biblioteca `django-ratelimit` ou `django-axes`), bloqueando temporariamente a conta ou aplicando atraso progressivo entre tentativas após um número definido de falhas consecutivas (ex: 5 tentativas), atendendo ao RNF15.
+Status: Implementado, com a biblioteca django-axes
 
+Parâmetros configurados:
 
-> Última atualização: _(29/08/2026)_
+Parâmetro	Valor
+AXES_FAILURE_LIMIT	5 tentativas
+Tempo de bloqueio (cooloff)	1 hora
+
+Justificativa:
+
+Optou-se pela biblioteca django-axes por se integrar nativamente ao sistema de autenticação do Django, sem exigir alterações profundas no fluxo de login já implementado. O limite de 5 tentativas falhas antes do bloqueio segue uma prática comum de mercado, equilibrando segurança (dificultar ataques de força bruta) e usabilidade (tolerância a erros de digitação legítimos do usuário). O período de bloqueio de 1 hora foi definido como tempo suficiente para desestimular ataques automatizados, sem impor um bloqueio excessivamente longo em caso de erro genuíno do usuário, atendendo ao RNF15
+
+> Última atualização: _(30/08/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_
