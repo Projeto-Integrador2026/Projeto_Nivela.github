@@ -7,4 +7,7 @@ urlpatterns = [
     path('', include(tf_urls)),
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('turmas/', views.turmas, name='turmas'),
+    path('chat/', views.chat, name='chat'),
+    path('gamificacao/', views.gamificacao, name='gamificacao'),
 ]
