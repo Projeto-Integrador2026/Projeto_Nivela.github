@@ -109,6 +109,10 @@ AUTH_PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
 ]
 
+# Define o modelo de usuario customizado como o modelo de autenticacao
+# padrao do projeto (necessario por causa do login por e-mail, RF02)
+AUTH_USER_MODEL = 'usuarios.Usuario'
+
 
 # Configuracao de sessao (item 1.9 e 1.10)
 # Sessao expira apos 30 minutos de inatividade
