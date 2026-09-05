@@ -176,3 +176,33 @@ AUTHENTICATION_BACKENDS = [
 # Configuracao do 2FA (itens 1.5 e 1.6)
 LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = 'two_factor:profile'
+
+# Configuracao de envio de email para recuperacao de senha (item 2.1)
+# Em desenvolvimento, o "console backend" imprime o email no terminal
+# em vez de enviar de verdade - facilita testar sem precisar de servidor de email
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Tempo de expiracao do token de recuperacao de senha, em segundos (item 2.3)
+# 3600 segundos = 1 hora (padrao do Django e 3 dias, reduzimos para maior seguranca)
+PASSWORD_RESET_TIMEOUT = 3600
+
+# Configuracao de log para recuperacao de senha (itens 2.6 e 2.7)
+# Registra em arquivo todas as solicitacoes e o resultado (sucesso/falha) do processo
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file_recuperacao_senha': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'recuperacao_senha.log',
+        },
+    },
+    'loggers': {
+        'usuarios.recuperacao_senha': {
+            'handlers': ['file_recuperacao_senha'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
