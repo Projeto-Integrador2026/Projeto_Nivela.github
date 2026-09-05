@@ -11,7 +11,7 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [x] 1.5 Autenticação de dois fatores (2FA) implementada
 - [x] 1.6 Validação do 2FA após autenticação primária
 - [x] 1.7 Fluxo de autenticação documentado
-- [ ] 1.8 Evidências funcionais (prints, logs ou testes)
+- [X] 1.8 Evidências funcionais (prints, logs ou testes)
 - [x] 1.9 Sessões com tempo de expiração
 - [x] 1.10 Invalidação de sessão no logout
 - [x] 1.11 Proteção contra força bruta (rate limit, bloqueio, atraso)
@@ -19,13 +19,13 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 
 ## 2. Recuperação de Senha
 
-- [ ] 2.1 Funcionalidade de recuperação de senha implementada
-- [ ] 2.2 Token criptograficamente seguro
-- [ ] 2.3 Token com tempo de expiração
-- [ ] 2.4 Token invalidado após uso
-- [ ] 2.5 Falha correta para token expirado
-- [ ] 2.6 Registro de solicitação de recuperação em log
-- [ ] 2.7 Registro de sucesso/falha do processo
+- [X] 2.1 Funcionalidade de recuperação de senha implementada
+- [X] 2.2 Token criptograficamente seguro
+- [X] 2.3 Token com tempo de expiração
+- [X] 2.4 Token invalidado após uso
+- [X] 2.5 Falha correta para token expirado
+- [X] 2.6 Registro de solicitação de recuperação em log
+- [X] 2.7 Registro de sucesso/falha do processo
 
 ## 3. Criptografia e Comunicação Segura
 
