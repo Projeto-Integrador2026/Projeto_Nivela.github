@@ -1,0 +1,13 @@
+asgiref==3.12.1
+colorama==0.4.6
+Django==5.2.17
+django-axes==8.3.1
+django-formtools==2.7
+django-otp==1.7.0
+django-phonenumber-field==8.5.0
+django-two-factor-auth==1.18.1
+psycopg2-binary==2.9.12
+python-decouple==3.8
+qrcode==8.2
+sqlparse==0.6.0
+tzdata==2026.3
