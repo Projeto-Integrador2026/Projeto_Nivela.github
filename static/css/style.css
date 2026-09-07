@@ -1,0 +1,8 @@
+.logo-nivela {
+    height: 20px;
+    width: auto;
+    border-radius: 6px;
+    padding: 2px;
+    background-color: #ffffff;
+    object-fit: contain;
+}

@@ -90,7 +90,7 @@ DATABASES = {
          'ENGINE': 'django.db.backends.postgresql', 
          'NAME': 'nivela_db', 'USER': 'postgres', 
          'PASSWORD': config('DB_PASSWORD'), 'HOST': 'localhost', 
-         'PORT': '5433', 
+         'PORT': '5432', 
     } 
 }
 

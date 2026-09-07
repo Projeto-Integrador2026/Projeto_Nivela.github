@@ -1,44 +1,59 @@
 {% extends 'base.html' %}
 
-{% block title %}Nivela - Inicio{% endblock %}
+{% block title %}Nivela - Início{% endblock %}
 
 {% block content %}
-<div class="text-center py-5">
-    <h1 class="display-4 fw-bold">Bem-vindo ao Nivela</h1>
-    <p class="lead text-muted">
-        Plataforma do Projeto Integrador 2026.
-    </p>
-    <hr class="my-4">
-    <p>
-        Explore os modulos do sistema pelo menu acima: Turmas, Chat e Gamificacao.
-    </p>
+<div class="text-center py-4">
+    <h1 class="display-5 fw-bold text-dark">Bem-vindo ao Nivela</h1>
+    <p class="lead text-secondary">Plataforma do Projeto Integrador 2026</p>
+    <p class="text-muted small">Explore os módulos do sistema abaixo ou navegue pelo menu superior.</p>
 </div>
 
-<div class="row g-4 mt-4">
+<div class="row g-4 mb-5">
+    <!-- Card Turmas -->
     <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Turmas</h5>
-                <p class="card-text">Gerencie turmas e acompanhe o progresso dos alunos.</p>
-                <a href="/turmas/" class="btn btn-primary">Acessar</a>
+        <div class="card h-100 shadow-sm border-0 bg-light">
+            <div class="card-body d-flex flex-column">
+                <div class="mb-3 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+                    </svg>
+                </div>
+                <h5 class="card-title fw-bold">Turmas</h5>
+                <p class="card-text text-muted flex-grow-1">Gerencie turmas e acompanhe o progresso dos alunos.</p>
+                <a href="/turmas/" class="btn btn-primary w-100 mt-3">Acessar</a>
             </div>
         </div>
     </div>
+
+    <!-- Card Chat -->
     <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Chat</h5>
-                <p class="card-text">Converse e tire duvidas em tempo real.</p>
-                <a href="/chat/" class="btn btn-primary">Acessar</a>
+        <div class="card h-100 shadow-sm border-0 bg-light">
+            <div class="card-body d-flex flex-column">
+                <div class="mb-3 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+                        <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0"/>
+                    </svg>
+                </div>
+                <h5 class="card-title fw-bold">Chat</h5>
+                <p class="card-text text-muted flex-grow-1">Converse e tire dúvidas em tempo real.</p>
+                <a href="/chat/" class="btn btn-primary w-100 mt-3">Acessar</a>
             </div>
         </div>
     </div>
+
+    <!-- Card Gamificação -->
     <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Gamificacao</h5>
-                <p class="card-text">Acompanhe pontos, conquistas e o ranking.</p>
-                <a href="/gamificacao/" class="btn btn-primary">Acessar</a>
+        <div class="card h-100 shadow-sm border-0 bg-light">
+            <div class="card-body d-flex flex-column">
+                <div class="mb-3 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-trophy-fill" viewBox="0 0 16 16">
+                        <path d="M2.5.5A.5.5 0 0 5 3h10a.5.5 0 0 5 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.707c0 .296.229.54.524.57 1.28.132 2.475.698 3.326 1.55.85.852 1.417 2.048 1.55 3.327.03.295-.214.524-.51.524H.49a.5.5 0 0 1-.51-.524c.133-1.279.7-2.475 1.55-3.327.85-.852 2.046-1.418 3.326-1.55.295-.03.524-.274.524-.57V7.15c0-.213-.153-.451-.443-.59A4.5 4.5 0 0 1 2 2V1H1a.5.5 0 0 1-.5-.5"/>
+                    </svg>
+                </div>
+                <h5 class="card-title fw-bold">Gamificação</h5>
+                <p class="card-text text-muted flex-grow-1">Acompanhe pontos, conquistas e o ranking.</p>
+                <a href="/gamificacao/" class="btn btn-primary w-100 mt-3">Acessar</a>
             </div>
         </div>
     </div>
