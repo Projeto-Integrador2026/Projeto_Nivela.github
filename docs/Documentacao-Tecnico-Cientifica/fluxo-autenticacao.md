@@ -7,8 +7,7 @@
 3. Sistema verifica se a conta não está bloqueada por tentativas excessivas (RNF15)
 4. Sistema compara o hash da senha informada com o hash armazenado, usando o salt do usuário (RNF10, RNF12)
 5. Se a senha estiver correta:
-   - Se o 2FA estiver ativo (RF07, desejável) → sistema solicita o segundo fator de autenticação (RF08)
-   - Se o 2FA não estiver ativo → segue direto para a criação da sessão
+      - Sistema solicita o segundo fator de autenticação, obrigatório para todos os usuários (RF07, RF08)
 6. Sistema cria a sessão do usuário, com tempo de expiração definido (RNF14)
 7. Sistema registra o evento de login no log de auditoria (RNF16)
 

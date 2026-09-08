@@ -36,7 +36,10 @@
 
 ## 1.5 / 1.6 — Autenticação de dois fatores (2FA) 
 
-> Conforme RF07 (ajustado na v3 dos requisitos), o 2FA foi classificado como requisito **desejável**, podendo ser postergado para uma versão futura caso o cronograma da disciplina não comporte sua implementação. Caso seja implementado, a validação do segundo fator deve ocorrer apenas após a autenticação primária bem-sucedida (RF08), evitando expor informação sobre a validade do 2FA antes de confirmar e-mail/senha corretos.
+Status: Implementado e obrigatório para todos os usuários, com as bibliotecas `django-two-factor-auth` e `django-otp` (TOTP).
+
+**Justificativa:**
+> O 2FA foi implementado como etapa obrigatória do fluxo de login (RF07), não apenas opcional, elevando o nível de segurança da plataforma mesmo em caso de comprometimento da senha do usuário. A validação do segundo fator ocorre somente após a autenticação primária (e-mail/senha) ser bem-sucedida (RF08) — assim, um atacante que não conheça a senha correta nunca chega a ver a tela de código TOTP, evitando vazar informação sobre a validade parcial das credenciais.
 
 ## 1.11 — Proteção contra força bruta 
 
