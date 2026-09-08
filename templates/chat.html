@@ -1,14 +1,113 @@
 {% extends 'base.html' %}
 
-{% block title %}Nivela - Chat{% endblock %}
+{% block title %}Nivela - Chat Acadêmico{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Chat</h1>
-<p class="text-muted">
-    Espaco de conversa e tira-duvidas entre alunos e professores.
-</p>
+<div class="row g-3" style="height: calc(100vh - 160px);">
+    
+    <!-- Coluna Esquerda: Lista de Professores e Canais -->
+    <div class="col-md-4 col-lg-3">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-dark text-white fw-bold py-3">
+                Atendimento & Dúvidas
+            </div>
+            <div class="list-group list-group-flush overflow-auto flex-grow-1">
+                <!-- Canal Geral -->
+                <a href="#" class="list-group-item list-group-item-action active d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <h6 class="mb-0 fw-bold">Dúvidas - Python & Lógica</h6>
+                        <small class="text-white-50">Prof. Carlos & Monitores</small>
+                    </div>
+                </a>
+                <!-- Canal Frontend -->
+                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <h6 class="mb-0 fw-bold">Dúvidas - Web Frontend</h6>
+                        <small class="text-muted">Profª. Ana Paula</small>
+                    </div>
+                </a>
+                <!-- Conversa Direta -->
+                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <h6 class="mb-0 fw-bold">Mensagem Privada</h6>
+                        <small class="text-muted">Falar com o Professor</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
 
-<div class="alert alert-info">
-    Pagina em construcao. Em breve, aqui sera possivel enviar e receber mensagens em tempo real.
+    <!-- Coluna Direita: Área de Mensagens -->
+    <div class="col-md-8 col-lg-9">
+        <div class="card h-100 shadow-sm border-0 d-flex flex-column">
+            
+            <!-- Cabeçalho do Chat -->
+            <div class="card-header bg-light d-flex align-items-center justify-content-between py-3 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-primary">Canal Aberto</span>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Dúvidas - Python & Lógica de Programação</h6>
+                        <small class="text-muted">Espaço para alunos enviarem códigos e tirarem dúvidas com os professores</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Mensagens -->
+            <div class="card-body overflow-auto flex-grow-1 bg-body-tertiary p-4 d-flex flex-column gap-3">
+                
+                <!-- Mensagem do Professor -->
+                <div class="d-flex flex-column align-items-start">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-dark">Professor</span>
+                        <small class="fw-bold text-dark">Prof. Carlos</small>
+                        <small class="text-muted" style="font-size: 0.75rem;">14:30</small>
+                    </div>
+                    <div class="p-3 bg-white rounded-3 shadow-sm border text-dark" style="max-width: 80%;">
+                        Olá, pessoal! Caso tenham dúvidas nas questões do módulo de laços de repetição (for/while), enviem o trecho do código aqui para analisarmos juntos.
+                    </div>
+                </div>
+
+                <!-- Mensagem do Aluno (Você) -->
+                <div class="d-flex flex-column align-items-end">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <small class="text-muted" style="font-size: 0.75rem;">14:32</small>
+                        <small class="fw-bold text-primary">Você (Aluno)</small>
+                        <span class="badge bg-primary">Aluno</span>
+                    </div>
+                    <div class="p-3 bg-primary text-white rounded-3 shadow-sm" style="max-width: 80%;">
+                        Professor, no exercício 3 meu laço <code>while</code> está entrando em loop infinito. Como faço para atualizar a variável de controle corretamente?
+                    </div>
+                </div>
+
+                <!-- Resposta do Professor -->
+                <div class="d-flex flex-column align-items-start">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-dark">Professor</span>
+                        <small class="fw-bold text-dark">Prof. Carlos</small>
+                        <small class="text-muted" style="font-size: 0.75rem;">14:35</small>
+                    </div>
+                    <div class="p-3 bg-white rounded-3 shadow-sm border text-dark" style="max-width: 80%;">
+                        Verifique se você inseriu o incremento da variável (ex: <code>contador += 1</code>) dentro do bloco do laço. Se esquecer dessa linha, a condição continuará sempre verdadeira!
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Campo de Envio de Mensagem -->
+            <div class="card-footer bg-white border-top p-3">
+                <form onsubmit="return false;" class="d-flex gap-2">
+                    <input type="text" class="form-control" placeholder="Digite sua dúvida para o professor ou turma..." aria-label="Digite sua mensagem">
+                    <button type="submit" class="btn btn-primary d-flex align-items-center gap-1">
+                        <span>Enviar</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+                            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.138L3.4 8.214l10.73-5.638Z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
 </div>
 {% endblock %}
