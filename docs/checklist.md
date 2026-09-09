@@ -64,7 +64,7 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [ ] 6.1 Documento de visão geral do sistema
 - [ ] 6.2 Diagrama de arquitetura
 - [ ] 6.3 Fluxos de autenticação e dados documentados
-- [ ] 6.4 Gestão de credenciais documentada
+- [x] 6.4 Gestão de credenciais documentada
 - [ ] 6.5 Uso de criptografia documentado
 - [ ] 6.6 Identificação dos ativos do sistema
 - [ ] 6.7 Identificação de ameaças e vulnerabilidades
