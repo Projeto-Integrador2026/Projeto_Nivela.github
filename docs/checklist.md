@@ -61,7 +61,7 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 
 ## 6. Documentação Técnico-Científica
 
-- [ ] 6.1 Documento de visão geral do sistema
+- [x] 6.1 Documento de visão geral do sistema
 - [ ] 6.2 Diagrama de arquitetura
 - [x] 6.3 Fluxos de autenticação e dados documentados
 - [x] 6.4 Gestão de credenciais documentada
@@ -71,8 +71,8 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [ ] 6.8 Associação risco × contramedida
 - [ ] 6.9 Testes de segurança realizados
 - [ ] 6.10 Resultados dos testes documentados
-- [ ] 6.11 Uso de artigos científicos e/ou normas técnicas
-- [ ] 6.12 Referências normalizadas
+- [x] 6.11 Uso de artigos científicos e/ou normas técnicas
+- [x] 6.12 Referências normalizadas
 
 ## 7. Resumo Científico
 
@@ -96,5 +96,5 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 
 ---
 
-> Última atualização: _(05/09/2026)_
+> Última atualização: _(09/09/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_
