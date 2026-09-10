@@ -2,7 +2,7 @@
 
 ## 1. Introdução
 
-Este documento apresenta uma visão geral do sistema **Nivela**, desenvolvido como parte do Projeto Integrador 2026, do curso de Engenharia de Software, sob orientação do professor Fabiano M. O projeto é desenvolvido pela equipe composta por Beatriz Miguel, Jhonathan Tonello e Vinicius R.
+O Documento de visão geral do sistema **Nivela**, foi desenvolvido como parte do Projeto Integrador 2026, do curso de Engenharia de Software, sob orientação do professor Fabiano M. O projeto é desenvolvido pela equipe composta pelos alunos Beatriz Miguel, Jhonathan Tonello e Vinicius R.
 
 ## 2. Descrição do sistema
 
@@ -13,7 +13,7 @@ O Nivela é uma **plataforma web educacional** que centraliza o diagnóstico e o
 **Objetivo geral:** Desenvolver uma plataforma web educacional focada no diagnóstico e nivelamento contínuo dos estudantes, que centralize trilhas de aprendizagem, promova a formação inteligente de grupos de estudo e viabilize a monitoria colaborativa entre alunos, garantindo ao professor uma visão unificada e analítica da evolução da turma.
 
 **Objetivos específicos:**
-- Mapear o perfil de conhecimento dos estudantes através de diagnóstico inicial
+
 - Estruturar o ensino com trilhas de microaprendizagem e atividades práticas
 - Engajar os usuários através de gamificação
 - Potencializar a colaboração via formação inteligente de grupos de estudo
@@ -70,7 +70,7 @@ O sistema segue o padrão **MVT (Model-View-Template)**, padrão do framework Dj
 | Ativo | Descrição | Nível de criticidade |
 |-------|-----------|------------------------|
 | Dados de autenticação (senha, salt) | Hash PBKDF2 + salt armazenados no banco | Crítico |
-| Dados pessoais de usuários | Nome, e-mail, foto de perfil, data de nascimento | Alto |
+| Dados pessoais de usuários | Nome, e-mail, data de nascimento | Alto |
 | Dados de menores de idade | Estudantes menores, sujeitos a consentimento do responsável (LGPD) | Crítico |
 | Sessões de usuário | Tokens de sessão ativos | Alto |
 | Banco de dados (PostgreSQL) | Armazena todos os dados da aplicação | Crítico |
