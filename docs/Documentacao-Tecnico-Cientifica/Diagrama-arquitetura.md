@@ -13,4 +13,9 @@ O sistema segue o padrão MVT (Model-View-Template), padrão do framework Django
 **gamificação**: pontuação, conquistas e progresso do estudante
 
 ----------------------------------------------
-**Diagrama**
+
+**Diagrama de Arquitetura**
+
+
+
+![Diagrama de Arquitetura](../assets/Diagrama_Arquitetura_Nivela.drawio.png)
