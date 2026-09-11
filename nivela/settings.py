@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from decouple import config
+# Le a variavel DATABASE_URL fornecida automaticamente pelo Render em
+# producao, ou usa a configuracao local (PostgreSQL na maquina do
+# desenvolvedor) quando essa variavel nao existir
+import dj_database_url
+from urllib.parse import quote
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,9 +30,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Le do .env (local) ou das variaveis de ambiente do Render (producao).
+# Localmente fica True (mostra detalhes de erro); em producao deve ser
+# False (esconde detalhes tecnicos do usuario final, exigido pelo
+# Requisito 3 de comunicacao segura)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+# Lista de dominios autorizados a servir esta aplicacao, separados por
+# virgula no .env/variavel de ambiente. Protege contra ataques de
+# "Host header injection". Em producao, deve incluir o dominio do
+# Render (ex.: nivela.onrender.com)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=lambda v: [s.strip() for s in v.split(',')])
 
 
 # Application definition
@@ -51,6 +65,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Serve os arquivos estaticos (CSS, imagens) diretamente pelo
+    # Django em producao, sem precisar de um servidor separado
+    # (necessario porque o Render nao roda um servidor de arquivos
+    # estaticos dedicado como Nginx)
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,14 +104,17 @@ WSGI_APPLICATION = 'nivela.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-
+# Em producao (Render), dj_database_url le automaticamente a variavel
+# de ambiente DATABASE_URL que o proprio Render fornece ao criar o
+# banco PostgreSQL gerenciado. Localmente, essa variavel nao existe,
+# entao cai no valor "default" abaixo, que monta a URL de conexao
+# usando a senha do .env e o banco PostgreSQL da maquina do
+# desenvolvedor (porta 5433).
 DATABASES = {
-     'default': { 
-         'ENGINE': 'django.db.backends.postgresql', 
-         'NAME': 'nivela_db', 'USER': 'postgres', 
-         'PASSWORD': config('DB_PASSWORD'), 'HOST': 'localhost', 
-         'PORT': '5432', 
-    } 
+    'default': dj_database_url.config(
+        default=f"postgresql://postgres:{quote(config('DB_PASSWORD'), safe='')}@localhost:5433/nivela_db",
+        conn_max_age=600,
+    )
 }
 
 # Itens 1.1, 1.3 e 1.4 do requisito de autenticacao:
@@ -157,6 +179,18 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+# Pasta onde o comando "collectstatic" reune todos os arquivos
+# estaticos do projeto antes do deploy (exigido pelo whitenoise
+# em producao)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    "staticfiles": {
+        # Comprime e adiciona hash no nome dos arquivos estaticos
+        # (ex.: style.a1b2c3.css), permitindo cache agressivo no
+        # navegador sem risco de servir uma versao desatualizada
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -207,3 +241,28 @@ LOGGING = {
         },
     },
 }
+
+# ============================================================
+# Seguranca de comunicacao (Requisito 3.1 e 3.2)
+# Essas configuracoes so entram em vigor quando DEBUG=False
+# (ou seja, apenas em producao/hospedado, nunca no localhost)
+# ============================================================
+
+# Item 3.1: forca todo acesso HTTP a ser redirecionado para HTTPS
+SECURE_SSL_REDIRECT = not DEBUG
+
+# Necessario porque o Render fica atras de um proxy reverso; sem
+# isso o Django nao consegue saber que a conexao original do
+# usuario ja chegou via HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Item 3.2: garante que cookies de sessao e de CSRF so trafeguem
+# por conexao criptografada, nunca em texto puro por HTTP
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
+# HSTS: instrui o navegador a nunca mais tentar acessar o site via
+# HTTP no futuro, mesmo que o usuario digite http:// manualmente
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
