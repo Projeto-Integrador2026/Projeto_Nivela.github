@@ -221,6 +221,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # 3600 segundos = 1 hora (padrao do Django e 3 dias, reduzimos para maior seguranca)
 PASSWORD_RESET_TIMEOUT = 3600
 
+# Garante que a pasta 'logs/' exista antes do Django tentar escrever
+# nela (necessario em producao, onde a pasta nao vem no repositorio)
+(BASE_DIR / 'logs').mkdir(exist_ok=True)
+
 # Configuracao de log para recuperacao de senha (itens 2.6 e 2.7)
 # Registra em arquivo todas as solicitacoes e o resultado (sucesso/falha) do processo
 LOGGING = {
