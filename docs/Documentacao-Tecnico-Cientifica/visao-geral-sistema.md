@@ -79,13 +79,16 @@ O sistema segue o padrão **MVT (Model-View-Template)**, padrão do framework Dj
 
 ## 9. Ameaças e vulnerabilidades identificadas
 
-| Ameaça | Descrição | Contramedida |
-|--------|-----------|----------------|
-| Ataque de força bruta no login | Tentativas repetidas de adivinhar senha | django-axes: bloqueio após 5 tentativas, cooloff de 1h |
-| Vazamento de senha em texto plano | Senha armazenada sem proteção | Hash PBKDF2 com salt único por usuário |
-| Sequestro de sessão | Reutilização de sessão após logout | Invalidação de sessão no servidor ao encerrar (RF09) |
-| Acesso não autorizado a dados de menores | Tratamento de dados sem consentimento | Consentimento obrigatório do responsável legal (RF50) |
-| Bypass de autenticação | Acesso sem completar a autenticação completa | 2FA obrigatório via middleware, aplicado a todos os perfis |
+| Ameaça | Descrição | Contramedida | Status |
+|--------|-----------|----------------|--------|
+| Ataque de força bruta no login | Tentativas repetidas de adivinhar senha | django-axes: bloqueio após 5 tentativas, cooloff de 1h | ✅ Implementado |
+| Vazamento de senha em texto plano | Senha armazenada sem proteção | Hash PBKDF2 com salt único por usuário | ✅ Implementado |
+| Sequestro de sessão | Reutilização de sessão após logout | Invalidação de sessão no servidor ao encerrar (RF09) | ✅ Implementado |
+| Bypass de autenticação | Acesso sem completar a autenticação completa | 2FA obrigatório via middleware, aplicado a todos os perfis | ✅ Implementado |
+| Acesso não autorizado a dados de menores | Tratamento de dados sem consentimento | Consentimento obrigatório do responsável legal (RF50) | ❌ Pendente — requisito definido, ainda não implementado |
+| Exposição de dados sensíveis em caso de vazamento do banco | Dados armazenados sem criptografia adicional | Criptografia simétrica (AES) de dados em repouso | ❌ Pendente — ainda não implementado |
+
+> 📌 Análise detalhada de risco × contramedida, incluindo os itens ainda pendentes, está disponível em `risco-contramedida.md`.
 
 ## 10. Referências
 
