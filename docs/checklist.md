@@ -35,8 +35,8 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [X] 3.4 Dados sensíveis criptografados em repouso
 - [X] 3.5 Uso de algoritmo criptográfico adequado (ex.: AES)
 - [X] 3.6 Chaves criptográficas protegidas
-- [ ] 3.7 Estratégia de criptografia documentada
-- [ ] 3.8 Justificativa técnica das escolhas
+- [x] 3.7 Estratégia de criptografia documentada
+- [x] 3.8 Justificativa técnica das escolhas
 
 ## 4. Conformidade com a LGPD
 
@@ -65,7 +65,7 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [x] 6.2 Diagrama de arquitetura
 - [x] 6.3 Fluxos de autenticação e dados documentados
 - [x] 6.4 Gestão de credenciais documentada
-- [ ] 6.5 Uso de criptografia documentado
+- [x] 6.5 Uso de criptografia documentado
 - [ ] 6.6 Identificação dos ativos do sistema
 - [ ] 6.7 Identificação de ameaças e vulnerabilidades
 - [ ] 6.8 Associação risco × contramedida
@@ -96,5 +96,5 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 
 ---
 
-> Última atualização: _(09/09/2026)_
+> Última atualização: _(13/09/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_
