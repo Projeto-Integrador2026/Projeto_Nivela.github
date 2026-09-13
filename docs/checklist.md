@@ -29,12 +29,12 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 
 ## 3. Criptografia e Comunicação Segura
 
-- [ ] 3.1 Comunicação protegida por TLS/HTTPS
-- [ ] 3.2 Bloqueio de conexões não seguras
-- [ ] 3.3 Evidência de tráfego cifrado
-- [ ] 3.4 Dados sensíveis criptografados em repouso
-- [ ] 3.5 Uso de algoritmo criptográfico adequado (ex.: AES)
-- [ ] 3.6 Chaves criptográficas protegidas
+- [X] 3.1 Comunicação protegida por TLS/HTTPS
+- [X] 3.2 Bloqueio de conexões não seguras
+- [X] 3.3 Evidência de tráfego cifrado
+- [X] 3.4 Dados sensíveis criptografados em repouso
+- [X] 3.5 Uso de algoritmo criptográfico adequado (ex.: AES)
+- [X] 3.6 Chaves criptográficas protegidas
 - [ ] 3.7 Estratégia de criptografia documentada
 - [ ] 3.8 Justificativa técnica das escolhas
 
