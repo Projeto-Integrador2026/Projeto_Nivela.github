@@ -83,7 +83,6 @@
 ## 3. Diagrama Entidade-Relacionamento
 _Insira aqui a imagem do DER, gerada a partir do script SQL (ex: via dbdiagram.io, importando o schema, ou pgAdmin com engenharia reversa)._
 
-![Diagrama Entidade-Relacionamento](../assets/der.png)
 
 ## 4. Dicionário de dados (campos sensíveis)
 
