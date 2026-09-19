@@ -31,7 +31,55 @@
             margin-bottom: 20px;
         }
 
-        /* A lib renderiza os campos como tabela (wizard.form.as_table) */
+        /* Card generico para paginas de conteudo (perfil, etc), centralizado */
+        .nivela-card{
+            background: #F7F8FA;
+            border: 1px solid #E4E7EC;
+            border-radius: 12px;
+            padding: 28px;
+            margin: 32px auto;
+            max-width: 640px;
+        }
+        .nivela-card h1{
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .nivela-card h2{
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 28px;
+            margin-bottom: 8px;
+        }
+        .nivela-card h3{
+            font-size: 15px;
+            font-weight: 700;
+            margin-top: 24px;
+            margin-bottom: 8px;
+        }
+        .nivela-card p{
+            color: #4B5563;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .nivela-card ul{
+            list-style: none;
+            padding: 0;
+            margin: 0 0 12px;
+        }
+        .nivela-card ul li{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #E4E7EC;
+            font-size: 14px;
+        }
+        .nivela-card ul li form{
+            margin: 0;
+        }
+
+        /* A lib renderiza os campos do wizard como tabela (wizard.form.as_table) */
         table.mb-3{
             width: 100%;
             border-collapse: collapse;
@@ -64,6 +112,7 @@
             border-color: #1D63E8;
         }
 
+        /* Padroniza todas as cores de botao do Bootstrap com a paleta do Nivela */
         .btn-primary{
             background-color: #1D63E8;
             border-color: #1D63E8;
@@ -71,6 +120,36 @@
         .btn-primary:hover{
             background-color: #164FBD;
             border-color: #164FBD;
+        }
+        .btn-info{
+            background-color: #1D63E8;
+            border-color: #1D63E8;
+            color: #fff;
+        }
+        .btn-info:hover{
+            background-color: #164FBD;
+            border-color: #164FBD;
+            color: #fff;
+        }
+        .btn-secondary{
+            background-color: #fff;
+            border-color: #D1D5DB;
+            color: #374151;
+        }
+        .btn-secondary:hover{
+            background-color: #F3F4F6;
+            border-color: #D1D5DB;
+            color: #374151;
+        }
+        .btn-warning{
+            background-color: #fff;
+            border-color: #F3B93B;
+            color: #92620B;
+        }
+        .btn-warning:hover{
+            background-color: #FEF6E6;
+            border-color: #F3B93B;
+            color: #92620B;
         }
     </style>
 </head>

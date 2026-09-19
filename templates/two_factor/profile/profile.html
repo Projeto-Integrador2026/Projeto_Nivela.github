@@ -1,0 +1,57 @@
+{% extends "two_factor/_base.html" %}
+{% load i18n %}
+{% load two_factor_tags %}
+
+{% block content %}
+  <div class="nivela-card">
+    <h1>{% block title %}Segurança da Conta{% endblock %}</h1>
+
+    {% if default_device %}
+      <p>{% blocktrans with primary=default_device|as_action %}Método principal: {{ primary }}{% endblocktrans %}</p>
+
+      {% if available_phone_methods %}
+        <h2>Números de Telefone de Backup</h2>
+        <p>Se o seu método principal não estiver disponível, podemos enviar tokens de backup para os números listados abaixo.</p>
+        {% if backup_phones %}
+          <ul>
+            {% for phone in backup_phones %}
+              <li>
+                {{ phone|as_action }}
+                <form method="post" action="{% url 'two_factor:phone_delete' phone.id %}"
+                    onsubmit="return confirm('Tem certeza?')">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-warning"
+                        type="submit">Remover</button>
+                </form>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <p><a href="{% url 'two_factor:phone_create' %}"
+          class="btn btn-info">Adicionar Número de Telefone</a></p>
+      {% endif %}
+
+      <h2>Tokens de Backup</h2>
+      <p>
+        Se você não tiver nenhum dispositivo com você, pode acessar sua conta usando tokens de backup.
+        {% blocktrans trimmed count counter=backup_tokens %}
+          Você tem apenas um token de backup restante.
+        {% plural %}
+          Você tem {{ counter }} tokens de backup restantes.
+        {% endblocktrans %}
+      </p>
+      <p><a href="{% url 'two_factor:backup_tokens' %}"
+            class="btn btn-info">Ver Códigos</a></p>
+
+      <h3>Desativar Autenticação em Duas Etapas</h3>
+      <p>Não recomendamos essa ação, mas se preferir, você também pode desativar a autenticação em duas etapas da sua conta.</p>
+      <p><a class="btn btn-secondary" href="{% url 'two_factor:disable' %}">
+        Desativar Autenticação em Duas Etapas</a></p>
+    {% else %}
+      <p>A autenticação em duas etapas não está ativada para sua conta. Ative para ter uma camada extra de segurança.</p>
+      <p><a href="{% url 'two_factor:setup' %}" class="btn btn-primary">
+        Ativar Autenticação em Duas Etapas</a>
+      </p>
+    {% endif %}
+  </div>
+{% endblock %}
