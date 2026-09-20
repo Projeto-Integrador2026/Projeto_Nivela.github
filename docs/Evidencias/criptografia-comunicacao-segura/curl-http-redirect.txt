@@ -1,0 +1,10 @@
+﻿HTTP/1.1 301 Moved Permanently
+Date: Sun, 20 Sep 2026 20:28:03 GMT
+Content-Type: text/html; charset=utf-8
+Connection: keep-alive
+Location: https://nivela-cw5t.onrender.com/
+cf-cache-status: DYNAMIC
+Server: cloudflare
+CF-RAY: a3e3930b5b2fa463-GRU
+alt-svc: h3=":443"; ma=86400
+
