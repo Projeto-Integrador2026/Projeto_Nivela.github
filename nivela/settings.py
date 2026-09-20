@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'usuarios',
     'turmas',
     'gamificacao',
+    'lgpd',
     'chat',
     'axes',
 ]
