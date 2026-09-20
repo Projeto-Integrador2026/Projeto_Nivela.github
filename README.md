@@ -1,10 +1,14 @@
 # Nivela
 
-Plataforma de nivelamento de ensino gamificada em turmas, desenvolvida como Projeto Integrador do curso de Engenharia de Software (UMC). Combina regras de negócio inspiradas no Duolingo (Trilhas de aprendizados, agrupamento por níveis, gameficação, análise de nível, análise de habilidade e rankig) com as do Microsoft Teams (turmas, avisos, chat interativo).
+Plataforma de nivelamento de ensino gamificada em turmas, desenvolvida como Projeto Integrador do curso de Engenharia de Software (UMC). Combina regras de negócio inspiradas no Duolingo (trilhas de aprendizado, agrupamento por níveis, gamificação, análise de nível, análise de habilidade e ranking) com as do Microsoft Teams (turmas, avisos, chat interativo).
+
+**Site publicado:** https://nivela-cw5t.onrender.com
+
+> O site roda no plano gratuito do Render. Depois de um período sem acesso, a primeira carga pode levar cerca de 50 segundos.
 
 ## Equipe
 
-- **Beatriz** — Back-end, front end e Banco de Dados
+- **Beatriz Miguel** — Back-end, front-end e Banco de Dados
 - **Jhonathan Tonello** — Documentação
 - **Vinicius Rodrigues** — Front-end e Layout
 - Professor responsável: Fabiano M.
@@ -14,7 +18,8 @@ Plataforma de nivelamento de ensino gamificada em turmas, desenvolvida como Proj
 - **Back-end:** Python / Django (arquitetura MVT)
 - **Banco de dados:** PostgreSQL
 - **Front-end:** HTML5, CSS3, JavaScript
-- **Segurança:** `django-two-factor-auth` (2FA), `django-axes` (proteção contra força bruta), hash de senha PBKDF2-SHA256
+- **Hospedagem:** Render
+- **Segurança:** `django-two-factor-auth` (2FA), `django-axes` (proteção contra força bruta), hash de senha PBKDF2-SHA256, HTTPS/TLS e criptografia de dados sensíveis em repouso com Fernet (`cryptography`)
 
 ## Como rodar o projeto localmente
 
@@ -48,10 +53,16 @@ Plataforma de nivelamento de ensino gamificada em turmas, desenvolvida como Proj
 
 4. Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
 ```
-SECRET_KEY=sua_secret_key_aqui
-DB_PASSWORD=sua_senha_do_postgresql_aqui
+   SECRET_KEY=sua_secret_key_aqui
+   FIELD_ENCRYPTION_KEY=sua_chave_fernet_aqui
+   DB_PASSWORD=sua_senha_do_postgresql_aqui
 ```
-> Peça esses valores para um integrante da equipe — nunca são compartilhados no repositório.
+   > A `SECRET_KEY` e a `DB_PASSWORD` devem ser pedidas a um integrante da equipe, pois nunca são compartilhadas no repositório.
+
+   A `FIELD_ENCRYPTION_KEY` (chave de criptografia dos dados sensíveis, que deve ser diferente da `SECRET_KEY`) pode ser gerada localmente:
+```bash
+   python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
 
 5. Crie um banco de dados PostgreSQL chamado `nivela_db`.
 
@@ -74,7 +85,8 @@ Toda a documentação técnica do projeto está na pasta [`docs/`](./docs), incl
 - [Termo de Abertura do Projeto (TAP)](./docs/TAP)
 - [Requisitos Funcionais e Não Funcionais](./docs/Requisitos)
 - [Casos de Uso](./docs/Casos-de-Uso)
-- [Documentação Técnico-Científica](./docs/Documentacao-Tecnico-Cientifica) (fluxos de autenticação e recuperação de senha, justificativas técnicas)
+- [Modelo de dados (DER)](./docs/DER)
+- [Documentação Técnico-Científica](./docs/Documentacao-Tecnico-Cientifica) (fluxos de autenticação e recuperação de senha, criptografia e comunicação segura, justificativas técnicas, arquitetura e riscos)
 - [Checklist de requisitos](./docs/checklist.md)
 - [Evidências funcionais](./docs/Evidencias)
 
