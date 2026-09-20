@@ -39,7 +39,7 @@
 Status: Implementado e obrigatório para todos os usuários, com as bibliotecas `django-two-factor-auth` e `django-otp` (TOTP).
 
 **Justificativa:**
-> O 2FA foi implementado como etapa obrigatória do fluxo de login (RF07), não apenas opcional, elevando o nível de segurança da plataforma mesmo em caso de comprometimento da senha do usuário. A validação do segundo fator ocorre somente após a autenticação primária (e-mail/senha) ser bem-sucedida (RF08) — assim, um atacante que não conheça a senha correta nunca chega a ver a tela de código TOTP, evitando vazar informação sobre a validade parcial das credenciais.
+> O 2FA foi implementado como etapa obrigatória do fluxo de login (RF07), não apenas opcional. Para garantir que nenhum usuário consiga contornar essa exigência, foi criado um middleware próprio (`usuarios.middleware.Force2FASetupMiddleware`) que verifica, a cada requisição, se o usuário autenticado já possui um dispositivo TOTP confirmado; caso não possua, ele é redirecionado obrigatoriamente para a tela de configuração antes de acessar qualquer outra parte do sistema. Isso eleva o nível de segurança da plataforma mesmo em caso de comprometimento da senha do usuário. A validação do segundo fator ocorre somente após a autenticação primária (e-mail/senha) ser bem-sucedida (RF08) — assim, um atacante que não conheça a senha correta nunca chega a ver a tela de código TOTP, evitando vazar informação sobre a validade parcial das credenciais.
 
 ## 1.11 — Proteção contra força bruta 
 
