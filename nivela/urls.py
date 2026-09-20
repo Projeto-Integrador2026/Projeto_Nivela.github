@@ -22,7 +22,11 @@ urlpatterns = [
     path('recuperar-senha/concluido/',
          auth_views.PasswordResetCompleteView.as_view(template_name='usuarios/password_reset_complete.html'),
          name='password_reset_complete'),
-
+    
+    # Cadastro de novos usuarios (link "Cadastre-se" da tela de login)
+    path('cadastro/', usuarios_views.CadastroView.as_view(), name='cadastro'),
+    # Logout (o Django 5 so aceita sair via POST, feito pelo botao Sair do menu)
+    path('sair/', auth_views.LogoutView.as_view(), name='logout'),
     path('', views.home, name='home'),
     path('turmas/', views.turmas, name='turmas'),
     path('chat/', views.chat, name='chat'),

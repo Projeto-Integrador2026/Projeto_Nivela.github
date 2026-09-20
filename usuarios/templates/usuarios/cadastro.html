@@ -1,0 +1,33 @@
+{% extends "two_factor/_base_focus.html" %}
+
+{% block content %}
+  <h1>{% block title %}Cadastro{% endblock %}</h1>
+  <p>Crie sua conta para acessar o Nivela.</p>
+
+  <form action="" method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    {% for field in form %}
+      <div class="mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}:</label>
+        {{ field }}
+        {% if field.help_text %}
+          <div class="form-text">{{ field.help_text|safe }}</div>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+  </form>
+
+  <div class="mt-3 pt-3 border-top small text-muted">
+    Já tem conta? <a href="{% url 'two_factor:login' %}">Entrar</a>
+  </div>
+{% endblock %}

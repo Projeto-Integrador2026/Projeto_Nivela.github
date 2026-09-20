@@ -171,7 +171,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
 
@@ -219,6 +219,7 @@ LOGOUT_REDIRECT_URL = '/'
 # Configuracao do 2FA (itens 1.5 e 1.6)
 LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = 'two_factor:profile'
+LOGOUT_REDIRECT_URL = 'two_factor:login'
 
 # Configuracao de envio de email para recuperacao de senha (item 2.1)
 # Em desenvolvimento, o "console backend" imprime o email no terminal

@@ -12,7 +12,7 @@
   {% if wizard.steps.current == 'auth' %}
     <p>Digite suas credenciais para acessar sua conta.</p>
   {% elif wizard.steps.current == 'token' %}
-    <p>{{ device|as_verbose_action }}</p>
+    <p>Digite o token gerado pelo seu aplicativo autenticador.</p>
   {% elif wizard.steps.current == 'backup' %}
     <p>Use este formulário para inserir um token de backup.
       Esses tokens foram gerados para você imprimir e guardar em local seguro.

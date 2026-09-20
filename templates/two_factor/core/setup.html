@@ -1,0 +1,58 @@
+{% extends "two_factor/_base_focus.html" %}
+{% load i18n %}
+
+{% block extra_media %}
+  {{ form.media }}
+{% endblock %}
+
+{% block content %}
+  <h1>{% block title %}Ativar autenticação em duas etapas{% endblock %}</h1>
+  {% if wizard.steps.current == 'welcome' %}
+    <p>Você está prestes a levar a segurança da sua conta para o próximo nível.
+      Siga as etapas deste assistente para ativar a autenticação em duas etapas.</p>
+  {% elif wizard.steps.current == 'method' %}
+    <p>Selecione qual método de autenticação você deseja usar.</p>
+  {% elif wizard.steps.current == 'generator' %}
+    <p>Para começar a usar um gerador de tokens, use o seu celular para escanear
+      o QR Code abaixo. Por exemplo, use o Google Authenticator.</p>
+    <p><img src="{{ QR_URL }}" alt="QR Code" class="bg-white"/></p>
+    <p>Como alternativa, você pode usar o segredo abaixo para configurar o TOTP
+      manualmente no seu aplicativo autenticador ou gerenciador de senhas.</p>
+    <p>Segredo TOTP: <a href="{{ otpauth_url }}">{{ secret_key }}</a></p>
+    <p>Depois, digite o token gerado pelo aplicativo.</p>
+
+  {% elif wizard.steps.current == 'sms' %}
+    <p>Digite o número de telefone no qual você deseja receber as mensagens de
+      texto. Esse número será validado na próxima etapa.</p>
+  {% elif wizard.steps.current == 'call' %}
+    <p>Digite o número de telefone no qual você deseja receber a ligação.
+      Esse número será validado na próxima etapa.</p>
+  {% elif wizard.steps.current == 'validation' %}
+    {% if challenge_succeeded %}
+      {% if device.method == 'call' %}
+        <p>Estamos ligando para o seu telefone agora. Digite os números que
+          você ouvir.</p>
+      {% elif device.method == 'sms' %}
+        <p>Enviamos uma mensagem de texto para você. Digite os tokens recebidos.</p>
+      {% endif %}
+    {% else %}
+      <p class="alert alert-warning" role="alert">Encontramos um problema com o
+        método de autenticação selecionado. Volte e verifique se as informações
+        foram digitadas corretamente, tente novamente ou use outro método de
+        autenticação. Se o problema continuar, entre em contato com o
+        administrador do site.</p>
+    {% endif %}
+  {% elif wizard.steps.current == 'yubikey' %}
+    <p>Para identificar e verificar a sua YubiKey, insira um token no campo
+      abaixo. A sua YubiKey será vinculada à sua conta.</p>
+  {% endif %}
+
+  <form action="" method="post">{% csrf_token %}
+    {% include "two_factor/_wizard_forms.html" %}
+
+    {# hidden submit button to enable [enter] key #}
+    <input type="submit" value="" hidden />
+
+    {% include "two_factor/_wizard_actions.html" %}
+  </form>
+{% endblock %}

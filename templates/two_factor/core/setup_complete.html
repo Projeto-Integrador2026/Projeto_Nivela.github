@@ -1,0 +1,23 @@
+{% extends "two_factor/_base_focus.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{% block title %}Ativar autenticação em duas etapas{% endblock %}</h1>
+
+  <p>Parabéns, você ativou a autenticação em duas etapas com sucesso.</p>
+
+  {% if not phone_methods %}
+    <p><a href="{% url 'two_factor:profile' %}"
+        class="btn btn-block btn-secondary">Voltar para a segurança da conta</a></p>
+  {% else %}
+    <p>No entanto, pode acontecer de você não ter acesso ao seu dispositivo
+      principal de tokens. Para ativar a recuperação da conta, adicione um
+      número de telefone.</p>
+
+    <a href="{% url 'two_factor:profile' %}"
+        class="float-right btn btn-link">Voltar para a segurança da conta</a>
+    <p><a href="{% url 'two_factor:phone_create' %}"
+        class="btn btn-success">Adicionar número de telefone</a></p>
+  {% endif %}
+
+{% endblock %}

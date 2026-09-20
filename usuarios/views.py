@@ -1,6 +1,10 @@
 from django.shortcuts import render
 import logging
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+
+from .forms import CadastroForm
 
 # ===================================================================
 # Views customizadas para o Requisito 2 - Recuperacao de Senha
@@ -55,3 +59,20 @@ class RedefinirSenhaView(PasswordResetConfirmView):
         logger.warning(f'FALHA ao redefinir senha para o usuario: {form.user}')
 
         return super().form_invalid(form)
+
+
+# ===================================================================
+# Cadastro de novos usuarios
+# ===================================================================
+
+class CadastroView(CreateView):
+    """
+    Tela de cadastro (link 'Cadastre-se' da tela de login).
+
+    A senha e gravada com hash (PBKDF2) pelo UserCreationForm e passa
+    pelos validadores de AUTH_PASSWORD_VALIDATORS. Depois de cadastrar,
+    o usuario e enviado para a tela de login.
+    """
+    form_class = CadastroForm
+    template_name = 'usuarios/cadastro.html'
+    success_url = reverse_lazy('two_factor:login')

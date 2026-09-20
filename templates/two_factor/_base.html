@@ -166,8 +166,22 @@
                     <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link" href="/turmas/">Turmas</a></li>
                     <li class="nav-item"><a class="nav-link" href="/chat/">Chat</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/gamificacao/">Gamificacao</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/gamificacao/">Gamificacao</a></li>
                 </ul>
+
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <span class="nav-link text-light">Ola, {{ user.username }}</span>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <form method="post" action="{% url 'logout' %}" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link btn btn-link p-0 border-0 d-flex align-items-center" style="color: rgba(255,255,255,.55); line-height: normal;">Sair</button>
+                        </form>
+                    </li>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </nav>

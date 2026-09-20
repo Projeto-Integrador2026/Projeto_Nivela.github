@@ -48,7 +48,7 @@
                         <span class="nav-link text-light">Ola, {{ user.username }}</span>
                     </li>
                     <li class="nav-item d-flex align-items-center">
-                        <form method="post" action="/admin/logout/" class="m-0">
+                        <form method="post" action="{% url 'logout' %}" class="m-0">
                             {% csrf_token %}
                             <button type="submit" class="nav-link btn btn-link p-0 border-0 d-flex align-items-center" style="color: rgba(255,255,255,.55); line-height: normal;">Sair</button>
                         </form>
@@ -57,7 +57,7 @@
                 {% else %}
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/login/">Entrar</a>
+                        <a class="nav-link" href="{% url 'two_factor:login' %}">Entrar</a>
                     </li>
                 </ul>
                 {% endif %}
