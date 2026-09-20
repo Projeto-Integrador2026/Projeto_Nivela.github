@@ -29,6 +29,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
+# Chave separada da SECRET_KEY, usada apenas para criptografar dados
+# sensiveis em repouso no banco (ex.: telefone do usuario). Gerada
+# com Fernet.generate_key() e guardada como variavel de ambiente,
+# nunca no codigo-fonte (item 3.6 do Requisito 3)
+FIELD_ENCRYPTION_KEY = config('FIELD_ENCRYPTION_KEY')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 # Le do .env (local) ou das variaveis de ambiente do Render (producao).
 # Localmente fica True (mostra detalhes de erro); em producao deve ser
