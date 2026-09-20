@@ -86,7 +86,7 @@ O sistema segue o padrão **MVT (Model-View-Template)**, padrão do framework Dj
 | Sequestro de sessão | Reutilização de sessão após logout | Invalidação de sessão no servidor ao encerrar (RF09) | ✅ Implementado |
 | Bypass de autenticação | Acesso sem completar a autenticação completa | 2FA obrigatório via middleware, aplicado a todos os perfis | ✅ Implementado |
 | Acesso não autorizado a dados de menores | Tratamento de dados sem consentimento | Consentimento obrigatório do responsável legal (RF50) | ❌ Pendente — requisito definido, ainda não implementado |
-| Exposição de dados sensíveis em caso de vazamento do banco | Dados armazenados sem criptografia adicional | Criptografia simétrica (AES) de dados em repouso | ❌ Pendente — ainda não implementado |
+| Exposição de dados sensíveis em caso de vazamento do banco | Dados armazenados sem criptografia adicional | Criptografia simétrica (AES) de dados em repouso | ✅ Implementado  |
 
 > 📌 Análise detalhada de risco × contramedida, incluindo os itens ainda pendentes, está disponível em `risco-contramedida.md`.
 
@@ -98,5 +98,5 @@ MENDES, Nicolas Satil; CARVALHO, Luciano Gonçalves de. Análise comparativa de 
 
 ---
 
-> Última atualização: _(09/09/2026)_
+> Última atualização: _(13/09/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_

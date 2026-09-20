@@ -1,0 +1,70 @@
+{% extends "two_factor/_base_focus.html" %}
+{% load i18n %}
+{% load two_factor_tags %}
+
+{% block extra_media %}
+  {{ form.media }}
+{% endblock %}
+
+{% block content %}
+  <h1>{% block title %}Entrar{% endblock %}</h1>
+
+  {% if wizard.steps.current == 'auth' %}
+    <p>Digite suas credenciais para acessar sua conta.</p>
+  {% elif wizard.steps.current == 'token' %}
+    <p>{{ device|as_verbose_action }}</p>
+  {% elif wizard.steps.current == 'backup' %}
+    <p>Use este formulário para inserir um token de backup.
+      Esses tokens foram gerados para você imprimir e guardar em local seguro.
+      Digite um deles para entrar na sua conta.</p>
+  {% endif %}
+
+  <form action="" method="post">
+    {% block main_form_content %}
+    {% csrf_token %}
+    {% include "two_factor/_wizard_forms.html" %}
+
+    {# hidden submit button to enable [enter] key #}
+    <input type="submit" value="" hidden />
+
+    {% if other_devices %}
+      <p>Ou, se preferir, use um dos seus outros métodos de autenticação:</p>
+      <p>
+        {% for other in other_devices %}
+        <button name="challenge_device" value="{{ other.persistent_id }}"
+                class="btn btn-secondary btn-block" type="submit">
+          {{ other|as_action }}
+        </button>
+      {% endfor %}</p>
+    {% endif %}
+
+    {% include "two_factor/_wizard_actions.html" %}
+    {% endblock %}
+  </form>
+
+  {% if wizard.steps.current == 'auth' %}
+    <div class="d-flex justify-content-between mt-3 pt-3 border-top">
+      <a href="{% url 'password_reset' %}" class="small">Esqueceu a senha?</a>
+      <span class="small text-muted">
+        Ainda não tem conta?
+        <a href="/cadastro/">Cadastre-se</a>
+      </span>
+    </div>
+  {% endif %}
+
+  {% block 'backup_tokens' %}
+    {% if backup_tokens %}
+       <hr>
+       <div class="backup_tokens_form">
+       <form action="" method="post">
+           {% csrf_token %}
+            <p>Como último recurso, você pode usar um token de backup:</p>
+            <p>
+                <button name="wizard_goto_step" type="submit" value="backup"
+                    class="btn btn-sm btn-secondary btn-block">Usar token de backup</button>
+            </p>
+       </form>
+       </div>
+    {% endif %}
+  {% endblock %}
+{% endblock %}

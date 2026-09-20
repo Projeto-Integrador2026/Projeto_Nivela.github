@@ -214,6 +214,8 @@ AUTHENTICATION_BACKENDS = [
 
 ]
 
+LOGOUT_REDIRECT_URL = '/'
+
 # Configuracao do 2FA (itens 1.5 e 1.6)
 LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = 'two_factor:profile'
