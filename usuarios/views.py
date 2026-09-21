@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-
+from lgpd.utils import mascarar_email
 from .forms import CadastroForm
 
 # ===================================================================
@@ -30,7 +30,7 @@ class RecuperarSenhaView(PasswordResetView):
         email = form.cleaned_data.get('email')
 
         # Registra a solicitacao de recuperacao em log (item 2.6)
-        logger.info(f'Solicitacao de recuperacao de senha para o email: {email}')
+        logger.info(f'Solicitacao de recuperacao de senha para o email: {mascarar_email(email)}')
 
         # Chama o comportamento padrao do Django: gera o token e envia o email
         return super().form_valid(form)
@@ -48,7 +48,7 @@ class RedefinirSenhaView(PasswordResetConfirmView):
     def form_valid(self, form):
         # form_valid roda quando a nova senha informada e valida e foi salva com sucesso
         # Registra o SUCESSO da redefinicao em log (item 2.7)
-        logger.info(f'Senha redefinida com SUCESSO para o usuario: {form.user}')
+        logger.info(f'Senha redefinida com SUCESSO para o usuario: {mascarar_email(form.user.email)}')
 
         return super().form_valid(form)
 
@@ -56,7 +56,7 @@ class RedefinirSenhaView(PasswordResetConfirmView):
         # form_invalid roda quando a nova senha nao passa na validacao
         # (ex: muito curta, muito comum, so numeros - ver AUTH_PASSWORD_VALIDATORS)
         # Registra a FALHA da redefinicao em log (item 2.7)
-        logger.warning(f'FALHA ao redefinir senha para o usuario: {form.user}')
+        logger.warning(f'FALHA ao redefinir senha para o usuario: {mascarar_email(form.user.email)}')
 
         return super().form_invalid(form)
 

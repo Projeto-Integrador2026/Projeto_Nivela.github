@@ -174,7 +174,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -238,22 +238,32 @@ PASSWORD_RESET_TIMEOUT = 3600
 # Configuracao de log para recuperacao de senha (itens 2.6 e 2.7)
 # Registra em arquivo todas as solicitacoes e o resultado (sucesso/falha) do processo
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file_recuperacao_senha': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'recuperacao_senha.log',
-        },
-    },
-    'loggers': {
-        'usuarios.recuperacao_senha': {
-            'handlers': ['file_recuperacao_senha'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
+      'version': 1,
+      'disable_existing_loggers': False,
+      # Data e hora em cada linha do log (auditoria, itens 2.6 e 2.7)
+      'formatters': {
+          'com_data': {
+              'format': '{asctime} {levelname} {message}',
+              'style': '{',
+              'datefmt': '%Y-%m-%d %H:%M:%S',
+          },
+      },
+      'handlers': {
+          'file_recuperacao_senha': {
+              'level': 'INFO',
+              'class': 'logging.FileHandler',
+              'filename': BASE_DIR / 'logs' / 'recuperacao_senha.log',
+              'formatter': 'com_data',
+              'encoding': 'utf-8',
+          },
+      },
+      'loggers': {
+          'usuarios.recuperacao_senha': {
+              'handlers': ['file_recuperacao_senha'],
+              'level': 'INFO',
+              'propagate': True,
+          },
+      },
 }
 
 # ============================================================
