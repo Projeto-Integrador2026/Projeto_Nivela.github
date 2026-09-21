@@ -279,3 +279,13 @@ CSRF_COOKIE_SECURE = not DEBUG
 SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
+
+   # Correcao de privacidade do django-axes (Requisito 4 - LGPD, minimizacao):
+   # 1) O axes procura o e-mail em um campo "email", mas o login com 2FA envia
+   #    "auth-username". Esta funcao ensina o axes a ler o campo certo, o que
+   #    tambem faz o bloqueio de 5 tentativas valer por conta (item 1.11).
+AXES_USERNAME_CALLABLE = 'usuarios.axes_utils.obter_username_login'
+   # 2) Campos que o axes nunca pode gravar em texto puro na coluna post_data.
+   #    Mantem os padroes ('username', 'ip_address') e acrescenta os campos
+   #    reais do formulario de login com 2FA.
+AXES_SENSITIVE_PARAMETERS = ['username', 'ip_address', 'auth-username', 'auth-password']
