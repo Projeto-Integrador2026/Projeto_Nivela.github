@@ -21,7 +21,7 @@
 | dois_fatores_ativo | BOOLEAN | RF07 — 2FA obrigatório |
 | ativo | BOOLEAN | Falso após exclusão de conta (RF11) |
 
-**tokens_redefinicao_senha** — ✅ Implementado (RF04, recuperação de senha já documentada em `fluxo-recuperacao-senha.md`)
+**Recuperação de senha (RF04)** — ✅ Implementado, porém **sem tabela própria**: o token é gerado de forma *stateless* via `PasswordResetTokenGenerator` nativo do Django (combina hash da senha, timestamp e ID do usuário), sem persistência em banco. Ver `fluxo-recuperacao-senha.md` para detalhes completos.
 
 **responsaveis_legais** — ❌ Planejado, ainda não implementado (depende do módulo LGPD)
 
