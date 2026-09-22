@@ -100,7 +100,7 @@ _Insira aqui a imagem do DER, gerada a partir do script SQL (ex: via dbdiagram.i
 | Categoria | Status |
 |-----------|--------|
 | Autenticação (usuarios, sessões, 2FA, força bruta) | ✅ Implementado |
-| Recuperação de senha (tokens) | ⏳ Em desenvolvimento |
+| Recuperação de senha (tokens) | ✅ Implementado |
 | Turmas | ✅ App existe, estrutura interna a confirmar |
 | Diagnóstico e Nivelamento | ⏳ A localizar dentro dos apps existentes |
 | Módulo Pedagógico (trilhas, atividades) | ❌ Planejado |
@@ -118,5 +118,5 @@ _Insira aqui a imagem do DER, gerada a partir do script SQL (ex: via dbdiagram.i
 
 ---
 
-> Última atualização: _(14/09/2026)_
+> Última atualização: _(22/09/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_
