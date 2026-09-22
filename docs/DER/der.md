@@ -81,7 +81,8 @@
 | usuarios 1 → N logs_auditoria | Ações de um usuário são registradas em log |
 
 ## 3. Diagrama Entidade-Relacionamento
-_Insira aqui a imagem do DER, gerada a partir do script SQL (ex: via dbdiagram.io, importando o schema, ou pgAdmin com engenharia reversa)._
+
+![Diagrama Entidade-Relacionamento — Projeto Nivela](../assets/diagrama_BD_Nivela.png)
 
 
 ## 4. Dicionário de dados (campos sensíveis)
