@@ -1,4 +1,4 @@
-# LGPD — Inventário de dados pessoais (itens 4.1 a 4.5)
+# LGPD — Inventário de dados pessoais (itens 4.1 a 4.6)
 
 ## 1. Dados pessoais tratados (4.1) e suas finalidades (4.2)
 
@@ -88,3 +88,25 @@ pertencer a uma dessas finalidades. O registro do item 4.4 é um exemplo prátic
 disso — a finalidade "Termos de uso e política de privacidade" fica associada
 a esse consentimento específico, visível na mesma evidência
 `print-consentimento-registrado-admin.jpg`.
+
+
+## 6. Possibilidade de revogação do consentimento (4.6)
+
+- O titular logado acessa **Meus dados** (menu superior) e vê todos os seus
+  consentimentos na tela "Meus consentimentos" (`lgpd/views.py`,
+  `meus_consentimentos`), com finalidade, versão do termo, status,
+  data de concessão e de revogação.
+- Cada consentimento ativo tem um botão **Revogar**, que chama a view
+  `revogar_consentimento` (protegida por login e restrita ao próprio titular)
+  e usa o método `revogar()` do model `RegistroConsentimento`.
+- A revogação **não apaga** o registro: mantém o histórico completo
+  (data de concessão original + data da revogação), só marca
+  `concedido = False`. Isso atende à rastreabilidade exigida pela LGPD.
+- Revogar o consentimento aos Termos de Uso não exclui a conta nem os dados
+  do titular — isso é tratado separadamente pela funcionalidade de exclusão
+  (item 4.10).
+
+Evidências em `docs/Evidencias/lgpd/`:
+
+- `print-consentimentos-lista-antes-revogar.jpg`: tela "Meus consentimentos" com o consentimento ativo e o botão "Revogar" disponível.
+- `print-consentimentos-revogado.jpg`: mesma tela após a revogação, com status "Revogado" e data/hora registrada.
