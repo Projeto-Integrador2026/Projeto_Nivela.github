@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Meus consentimentos{% endblock %}
+
+{% block content %}
+  <h1>Meus consentimentos</h1>
+  <p>Aqui você vê todos os consentimentos que já deu no Nivela e pode revogar os que quiser.</p>
+  <p class="text-muted small">Revogar o consentimento aos Termos de Uso não apaga sua conta nem seus dados — isso é feito separadamente, pela funcionalidade de exclusão (item 4.10).</p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Finalidade</th>
+        <th>Versão do termo</th>
+        <th>Status</th>
+        <th>Concedido em</th>
+        <th>Revogado em</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for consentimento in consentimentos %}
+      <tr>
+        <td>{{ consentimento.get_finalidade_display }}</td>
+        <td>{{ consentimento.versao_termo }}</td>
+        <td>
+          {% if consentimento.concedido %}
+            <span class="badge bg-success">Concedido</span>
+          {% else %}
+            <span class="badge bg-secondary">Revogado</span>
+          {% endif %}
+        </td>
+        <td>{{ consentimento.data_concessao }}</td>
+        <td>{{ consentimento.data_revogacao|default:"-" }}</td>
+        <td>
+          {% if consentimento.concedido %}
+          <form method="post" action="{% url 'lgpd:revogar_consentimento' consentimento.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger">Revogar</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">Você ainda não tem nenhum consentimento registrado.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

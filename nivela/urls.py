@@ -8,6 +8,7 @@ from two_factor.urls import urlpatterns as tf_urls
 urlpatterns = [
     path('', include(tf_urls)),
     path('admin/', admin.site.urls),
+    path('', include('lgpd.urls')),
 
     # Recuperacao de senha (item 2.1) - views prontas do Django
     path('recuperar-senha/',
