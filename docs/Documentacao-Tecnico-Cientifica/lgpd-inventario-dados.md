@@ -7,18 +7,24 @@
 | E-mail | Informado no cadastro | `usuarios_usuario.email` | Identificar o titular, autenticar o login (RF02) e enviar o link de recuperação de senha | Execução de contrato (art. 7º, V) |
 | Senha | Informada no cadastro | `usuarios_usuario.password` (somente o hash) | Autenticar o titular | Execução de contrato (art. 7º, V) |
 | Nome de usuário (`username`) | Preenchido automaticamente com o e-mail | `usuarios_usuario.username` | Exigência técnica do modelo de usuário do Django; não é usado no login | Execução de contrato (art. 7º, V) |
-| Telefone (opcional) | Informado pelo titular | `usuarios_usuario.telefone` (criptografado) | Contato com o titular | Consentimento (art. 7º, I) |
+| Telefone (opcional) | Informado pelo titular; hoje só pode ser preenchido via admin, sem tela própria | `usuarios_usuario.telefone` (criptografado) | Contato com o titular | Consentimento (art. 7º, I) |
 | Datas de criação e último acesso | Geradas pelo sistema | `usuarios_usuario.date_joined` e `last_login` | Controle e segurança da conta | Legítimo interesse (art. 7º, IX) |
 | Dados do 2FA | Gerados ao ativar a verificação em duas etapas | Tabelas do django-otp | Verificação em duas etapas no login | Legítimo interesse (art. 7º, IX) |
 | Sessão e cookies técnicos | Gerados no login | `django_session`; cookies `sessionid` e `csrftoken` | Manter o titular autenticado e proteger os formulários | Execução de contrato (art. 7º, V) |
 | Tentativas de login | Geradas pelo django-axes | Tabelas do django-axes (usuário informado, IP, navegador, data) | Proteção contra força bruta | Legítimo interesse (art. 7º, IX) |
 | Log de recuperação de senha | Gerado pelo sistema | `logs/recuperacao_senha.log` (e-mail informado e data) | Auditoria do fluxo de recuperação | Legítimo interesse (art. 7º, IX) |
 | Registros de acesso da hospedagem | Gerados por Render e Cloudflare | Infraestrutura de terceiros (IP, URL, navegador) | Operação e segurança da hospedagem | Legítimo interesse (art. 7º, IX) |
+| Progresso nas lições | Gerado pelo sistema conforme o titular avança | `gamificacao_progressolicao` (usuário, lição, concluída, data) | Controlar o avanço na trilha de aprendizado | Execução de contrato (art. 7º, V) |
+| Tentativas de exercícios | Geradas a cada resposta do titular | `gamificacao_tentativaexercicio` (usuário, exercício, correta, data) | Avaliar desempenho e liberar próximos módulos | Execução de contrato (art. 7º, V) |
+| Perfil de gamificação (XP, streak, última atividade) | Calculado pelo sistema a partir do uso | `gamificacao_perfilgamificacao` | Ranking, nível e sequência de estudo | Execução de contrato (art. 7º, V) |
+| Resultado do teste de nivelamento e liberações manuais | Gerado pelo sistema (teste) ou por um professor | `gamificacao_resultadonivelamento` e `gamificacao_liberacaomanual` | Definir módulo inicial e registrar liberações do professor | Legítimo interesse (art. 7º, IX) |
 | Consentimentos e solicitações do titular | Gerados pelo módulo LGPD | `lgpd_registroconsentimento` e `lgpd_solicitacaotitular` | Comprovar o consentimento e o atendimento dos direitos | Obrigação legal (art. 7º, II; art. 8º, §2º) |
 
 As bases legais são a proposta do grupo, com base na Lei nº 13.709/2018 (LGPD), e devem ser validadas pelo professor responsável.
 
 A mesma lista existe em código, em `lgpd/inventario.py`, e alimenta a página "Meus dados" do sistema.
+
+Cada linha da tabela acima traz uma finalidade específica (coluna "Finalidade"), atendendo ao item 4.2: nenhum dado é tratado sem um propósito claro e definido, e nenhuma finalidade é genérica ou compartilhada indevidamente entre dados de natureza diferente.
 
 ## 2. Evidência de minimização de dados (4.3)
 
@@ -45,6 +51,7 @@ Evidências em `docs/Evidencias/lgpd/`:
 | Tentativas de login | Acesso restrito ao banco | A definir pelo grupo |
 | Log de recuperação de senha | Arquivo fora do repositório | Enquanto o arquivo existir |
 | Registros da hospedagem | Gerenciados pelos provedores | Conforme a política de cada provedor |
+| Progresso, tentativas, perfil de gamificação e nivelamento | Acesso restrito ao banco | Enquanto a conta existir |
 | Consentimentos e solicitações | Acesso restrito ao banco | Consentimentos: apagados com a conta. Solicitações: mantidas sem dados pessoais |
 
 ---
