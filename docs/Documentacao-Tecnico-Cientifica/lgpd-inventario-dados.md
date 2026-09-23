@@ -1,4 +1,4 @@
-# LGPD — Inventário de dados pessoais (itens 4.1 a 4.3)
+# LGPD — Inventário de dados pessoais (itens 4.1 a 4.5)
 
 ## 1. Dados pessoais tratados (4.1) e suas finalidades (4.2)
 
@@ -58,3 +58,33 @@ Evidências em `docs/Evidencias/lgpd/`:
 
 > Última atualização: _(20/09/2026)_
 > Responsável pela documentação: _(Beatriz Miguel)_
+
+
+## 4. Registro explícito de consentimento (4.4)
+
+- No cadastro (`/cadastro/`), o titular precisa marcar obrigatoriamente a caixa "Li e aceito os Termos de Uso e a Política de Privacidade" (`aceite_termos` em `usuarios/forms.py`). O campo vem **desmarcado por padrão** e o cadastro não é concluído sem essa ação afirmativa.
+- Ao concluir o cadastro, `usuarios/views.py` (`CadastroView.form_valid`) cria automaticamente um registro em `RegistroConsentimento` (`lgpd/models.py`), com:
+  - `finalidade = "termos_uso"`
+  - `versao_termo` = versão vigente dos termos no momento (`VERSAO_TERMOS` em `lgpd/inventario.py`)
+  - `concedido = True` e `data_concessao` = data/hora do cadastro
+- Esse registro fica visível no Django Admin, em **LGPD → Registros de consentimento**.
+
+Evidências em `docs/Evidencias/lgpd/`:
+
+- `print-consentimento-checkbox-obrigatorio.jpg`: tentativa de cadastro sem marcar o checkbox, recusada com "Este campo é obrigatório."
+- `print-consentimento-registrado-admin.jpg`: registro de consentimento criado no Admin após o cadastro com o checkbox marcado.
+
+
+## 5. Consentimento associado à finalidade (4.5)
+
+O modelo `RegistroConsentimento` (`lgpd/models.py`) obriga cada registro a declarar
+uma finalidade específica através do campo `finalidade`, que usa `choices` fixos:
+
+- `termos_uso` — Termos de uso e política de privacidade
+- `telefone` — Uso do telefone para contato
+
+Não existe consentimento genérico: todo registro criado no sistema precisa
+pertencer a uma dessas finalidades. O registro do item 4.4 é um exemplo prático
+disso — a finalidade "Termos de uso e política de privacidade" fica associada
+a esse consentimento específico, visível na mesma evidência
+`print-consentimento-registrado-admin.jpg`.

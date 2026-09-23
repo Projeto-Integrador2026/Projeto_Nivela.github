@@ -1,3 +1,6 @@
+from django.utils import timezone
+from lgpd.inventario import VERSAO_TERMOS
+from lgpd.models import RegistroConsentimento
 from django.shortcuts import render
 import logging
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
@@ -6,9 +9,8 @@ from django.views.generic import CreateView
 from lgpd.utils import mascarar_email
 from .forms import CadastroForm
 
-# ===================================================================
+
 # Views customizadas para o Requisito 2 - Recuperacao de Senha
-# ===================================================================
 
 # Logger customizado para recuperacao de senha (itens 2.6 e 2.7)
 # Configurado em settings.py (LOGGING), grava no arquivo logs/recuperacao_senha.log
@@ -60,10 +62,8 @@ class RedefinirSenhaView(PasswordResetConfirmView):
 
         return super().form_invalid(form)
 
-
-# ===================================================================
 # Cadastro de novos usuarios
-# ===================================================================
+
 
 class CadastroView(CreateView):
     """
@@ -76,3 +76,19 @@ class CadastroView(CreateView):
     form_class = CadastroForm
     template_name = 'usuarios/cadastro.html'
     success_url = reverse_lazy('two_factor:login')
+
+    def form_valid(self, form):
+        resposta = super().form_valid(form)
+
+        # Registro explícito do consentimento aos Termos de Uso (item 4.4),
+        # já associado à finalidade "termos_uso" e à versão vigente do
+        # termo no momento do cadastro.
+        RegistroConsentimento.objects.create(
+            usuario=self.object,
+            finalidade=RegistroConsentimento.Finalidade.TERMOS_USO,
+            versao_termo=VERSAO_TERMOS,
+            concedido=True,
+            data_concessao=timezone.now(),
+        )
+
+        return resposta
