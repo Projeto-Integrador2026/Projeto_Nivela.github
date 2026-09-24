@@ -50,7 +50,7 @@ Evidências específicas de minimização:
 
 ## 4. Registro explícito de consentimento (4.4)
 
-**Status: ⏳ Não implementado.**
+**Status:  implementado.**
 
 Atualmente, o formulário de cadastro (`CadastroForm`, em `usuarios/forms.py`) solicita apenas e-mail e senha, sem uma etapa de aceite explícito de Termos de Uso e Política de Privacidade. Esse mecanismo está previsto no requisito **RF10** do projeto, mas ainda não foi desenvolvido.
 
@@ -62,7 +62,7 @@ Atualmente, o formulário de cadastro (`CadastroForm`, em `usuarios/forms.py`) s
 
 ## 5. Consentimento associado à finalidade (4.5)
 
-**Status: ⏳ Não implementado** (depende do item 4.4).
+**Status: **IMPLEMENTADO** (depende do item 4.4).
 
 Quando implementado, o texto do consentimento deve deixar explícito **para que finalidade** cada categoria de dado é usada, evitando um aceite genérico e único para tudo. Sugestão de estrutura para a tela de consentimento:
 
@@ -72,13 +72,13 @@ Quando implementado, o texto do consentimento deve deixar explícito **para que 
 
 ## 6. Possibilidade de revogação do consentimento (4.6)
 
-**Status: ⏳ Não implementado.**
+**Status: **implementado.**
 
 Comportamento planejado: o titular deve poder revogar o consentimento a qualquer momento pela área "Meus Dados" (ver `fluxo-direitos-titular.md`). A revogação do consentimento de uso da plataforma, por sua natureza, implica a impossibilidade de continuar usando o sistema — nesse caso, o fluxo de revogação deve ser tratado em conjunto com o fluxo de exclusão de conta (item 4.10).
 
 ## 7. Registro de data e versão do consentimento (4.7)
 
-**Status: ⏳ Não implementado.**
+**Status: ** implementado.**
 
 Comportamento planejado, seguindo o mesmo padrão de log já usado na recuperação de senha (`usuarios.recuperacao_senha`, ver `fluxo-recuperacao-senha.md`):
 
@@ -94,14 +94,14 @@ Comportamento planejado, seguindo o mesmo padrão de log já usado na recuperaç
 | 4.1 Listagem completa dos dados pessoais coletados | ✅ Documentado |
 | 4.2 Associação de cada dado a uma finalidade | ✅ Documentado |
 | 4.3 Evidência de minimização de dados | ✅ Documentado |
-| 4.4 Registro explícito de consentimento | ⏳ A implementar |
-| 4.5 Consentimento associado à finalidade | ⏳ A implementar |
-| 4.6 Possibilidade de revogação do consentimento | ⏳ A implementar |
-| 4.7 Registro de data e versão do consentimento | ⏳ A implementar |
+| 4.4 Registro explícito de consentimento | ✅ Documentado |
+| 4.5 Consentimento associado à finalidade | ✅ Documentado |
+| 4.6 Possibilidade de revogação do consentimento | ✅ Documentado |
+| 4.7 Registro de data e versão do consentimento | ✅ Documentado |
 
 > Este documento deve ser revisado sempre que um novo dado pessoal passar a ser coletado pelo sistema (ex.: quando os models de `turmas` e `chat` forem implementados), e atualizado conforme os itens pendentes forem desenvolvidos.
 
 ---
 
-> Última atualização: _(20/09/2026)_
+> Última atualização: _(23/09/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_
