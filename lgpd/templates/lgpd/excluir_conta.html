@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir minha conta{% endblock %}
+
+{% block content %}
+  <h1>Excluir minha conta</h1>
+
+  <div class="alert alert-danger">
+    <strong>Atenção: esta ação é permanente e não pode ser desfeita.</strong>
+    <p class="mb-0 mt-2">Ao confirmar, serão excluídos definitivamente:</p>
+    <ul class="mb-0">
+      <li>Sua conta (e-mail, senha e telefone)</li>
+      <li>Seu progresso, XP, streak e histórico de exercícios na gamificação</li>
+      <li>Seus registros de consentimento</li>
+      <li>Sua verificação em duas etapas (2FA)</li>
+    </ul>
+  </div>
+
+  {% if erro %}
+    <div class="alert alert-warning">{{ erro }}</div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="senha" class="form-label">Confirme sua senha</label>
+      <input type="password" name="senha" id="senha" class="form-control" required>
+    </div>
+    <div class="form-check mb-3">
+      <input type="checkbox" name="confirmar" id="confirmar" class="form-check-input" required>
+      <label for="confirmar" class="form-check-label">
+        Tenho certeza que quero excluir permanentemente minha conta e todos os meus dados.
+      </label>
+    </div>
+    <button type="submit" class="btn btn-danger">Excluir minha conta permanentemente</button>
+    <a href="{% url 'lgpd:meus_dados' %}" class="btn btn-outline-secondary">Cancelar</a>
+  </form>
+{% endblock %}
