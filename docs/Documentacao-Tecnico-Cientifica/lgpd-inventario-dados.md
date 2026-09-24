@@ -110,3 +110,27 @@ Evidências em `docs/Evidencias/lgpd/`:
 
 - `print-consentimentos-lista-antes-revogar.jpg`: tela "Meus consentimentos" com o consentimento ativo e o botão "Revogar" disponível.
 - `print-consentimentos-revogado.jpg`: mesma tela após a revogação, com status "Revogado" e data/hora registrada.
+
+
+## 7. Registro de data e versão do consentimento (4.7)
+
+- Todo `RegistroConsentimento` grava, no momento em que é criado:
+  - `versao_termo`: a versão dos Termos de Uso / Política de Privacidade vigente
+    naquele momento, definida em `VERSAO_TERMOS` (`lgpd/inventario.py`). Se o
+    texto dos termos mudar no futuro, essa constante deve ser incrementada
+    (ex.: "1.1"), preservando nos registros antigos qual versão cada titular
+    realmente aceitou.
+  - `data_concessao`: data e hora exatas do consentimento, geradas pelo
+    sistema (`timezone.now()`), não informadas pelo titular.
+- A revogação (item 4.6) segue o mesmo princípio: `data_revogacao` é gravada
+  automaticamente pelo método `revogar()` no momento em que o titular clica
+  em "Revogar", nunca informada manualmente.
+- Essas informações ficam visíveis tanto no Django Admin (**LGPD → Registros
+  de consentimento**) quanto para o próprio titular, na tela **Meus dados**
+  (item 4.6), que exibe as colunas "Versão do termo", "Concedido em" e
+  "Revogado em" para cada registro.
+
+Não há evidência nova para este item: as mesmas evidências dos itens 4.4 e 4.6
+(`print-consentimento-registrado-admin.jpg`,
+`print-consentimentos-lista-antes-revogar.jpg` e
+`print-consentimentos-revogado.jpg`) já mostram a versão e as datas gravadas.
