@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'usuarios',
     'turmas',
     'gamificacao',
+    'lgpd',
     'chat',
     'axes',
 ]
@@ -173,7 +174,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -237,22 +238,32 @@ PASSWORD_RESET_TIMEOUT = 3600
 # Configuracao de log para recuperacao de senha (itens 2.6 e 2.7)
 # Registra em arquivo todas as solicitacoes e o resultado (sucesso/falha) do processo
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file_recuperacao_senha': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'recuperacao_senha.log',
-        },
-    },
-    'loggers': {
-        'usuarios.recuperacao_senha': {
-            'handlers': ['file_recuperacao_senha'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
+      'version': 1,
+      'disable_existing_loggers': False,
+      # Data e hora em cada linha do log (auditoria, itens 2.6 e 2.7)
+      'formatters': {
+          'com_data': {
+              'format': '{asctime} {levelname} {message}',
+              'style': '{',
+              'datefmt': '%Y-%m-%d %H:%M:%S',
+          },
+      },
+      'handlers': {
+          'file_recuperacao_senha': {
+              'level': 'INFO',
+              'class': 'logging.FileHandler',
+              'filename': BASE_DIR / 'logs' / 'recuperacao_senha.log',
+              'formatter': 'com_data',
+              'encoding': 'utf-8',
+          },
+      },
+      'loggers': {
+          'usuarios.recuperacao_senha': {
+              'handlers': ['file_recuperacao_senha'],
+              'level': 'INFO',
+              'propagate': True,
+          },
+      },
 }
 
 # ============================================================
@@ -279,3 +290,13 @@ CSRF_COOKIE_SECURE = not DEBUG
 SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
+
+   # Correcao de privacidade do django-axes (Requisito 4 - LGPD, minimizacao):
+   # 1) O axes procura o e-mail em um campo "email", mas o login com 2FA envia
+   #    "auth-username". Esta funcao ensina o axes a ler o campo certo, o que
+   #    tambem faz o bloqueio de 5 tentativas valer por conta (item 1.11).
+AXES_USERNAME_CALLABLE = 'usuarios.axes_utils.obter_username_login'
+   # 2) Campos que o axes nunca pode gravar em texto puro na coluna post_data.
+   #    Mantem os padroes ('username', 'ip_address') e acrescenta os campos
+   #    reais do formulario de login com 2FA.
+AXES_SENSITIVE_PARAMETERS = ['username', 'ip_address', 'auth-username', 'auth-password']

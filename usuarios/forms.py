@@ -14,6 +14,14 @@ class CadastroForm(UserCreationForm):
     preenchemos o username (ainda obrigatorio no modelo) com o mesmo valor.
     """
 
+    # Consentimento explícito aos Termos de Uso / Política de Privacidade
+    # (item 4.4 do checklist LGPD). Vem desmarcado por padrão e é
+    # obrigatório: o cadastro não é concluído sem essa ação afirmativa.
+    aceite_termos = forms.BooleanField(
+        label='Li e aceito os Termos de Uso e a Política de Privacidade',
+        required=True,
+    )
+
     class Meta:
         model = Usuario
         fields = ('email',)
@@ -24,8 +32,11 @@ class CadastroForm(UserCreationForm):
         self.fields['password1'].label = 'Senha'
         self.fields['password2'].label = 'Confirmar senha'
         # Mesmo visual dos campos da tela de login (Bootstrap)
-        for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
+        for nome, field in self.fields.items():
+            if nome == 'aceite_termos':
+                field.widget.attrs['class'] = 'form-check-input'
+            else:
+                field.widget.attrs['class'] = 'form-control'
 
     def save(self, commit=True):
         user = super().save(commit=False)

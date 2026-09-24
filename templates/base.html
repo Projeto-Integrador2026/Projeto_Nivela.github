@@ -43,10 +43,16 @@
                 </ul>
 
                 {% if user.is_authenticated %}
+                
                 <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lgpd:meus_dados' %}">Meus dados</a>
+                    </li>
                     <li class="nav-item">
                         <span class="nav-link text-light">Ola, {{ user.username }}</span>
                     </li>
+
+
                     <li class="nav-item d-flex align-items-center">
                         <form method="post" action="{% url 'logout' %}" class="m-0">
                             {% csrf_token %}

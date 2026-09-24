@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Meus dados{% endblock %}
+
+{% block content %}
+  <h1>Meus dados</h1>
+  <p>Aqui você consulta os dados pessoais que o Nivela guarda sobre você.</p>
+
+  <h2 class="h4 mt-4">Dados da conta</h2>
+  <table class="table">
+    <tr><th>E-mail</th><td>{{ usuario.email }}</td></tr>
+    <tr><th>Telefone</th><td>{{ usuario.telefone|default:"Não informado" }}</td></tr>
+    <tr><th>Conta criada em</th><td>{{ usuario.date_joined }}</td></tr>
+    <tr><th>Último acesso</th><td>{{ usuario.last_login|default:"-" }}</td></tr>
+    <tr><th>Verificação em duas etapas (2FA)</th><td>{% if tem_2fa %}Ativada{% else %}Não ativada{% endif %}</td></tr>
+  </table>
+
+  <h2 class="h4 mt-4">Dados de aprendizado e gamificação</h2>
+  <table class="table">
+    <tr><th>XP total</th><td>{{ perfil.xp_total|default:0 }}</td></tr>
+    <tr><th>Nível</th><td>{{ perfil.nivel_calculado|default:1 }}</td></tr>
+    <tr><th>Sequência (streak) atual</th><td>{{ perfil.streak_atual|default:0 }}</td></tr>
+    <tr><th>Sequência recorde</th><td>{{ perfil.streak_recorde|default:0 }}</td></tr>
+    <tr><th>Lições concluídas</th><td>{{ licoes_concluidas }}</td></tr>
+    <tr><th>Tentativas de exercícios</th><td>{{ tentativas_total }} (acertos: {{ tentativas_corretas }})</td></tr>
+    <tr>
+      <th>Teste de nivelamento</th>
+      <td>
+        {% if nivelamento %}
+          Realizado em {{ nivelamento.data }} — módulo sugerido: {{ nivelamento.modulo_sugerido|default:"-" }}
+        {% else %}
+          Não realizado
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+
+    <p>
+    <a href="{% url 'lgpd:exportar_dados' %}" class="btn btn-outline-primary btn-sm">Baixar meus dados (JSON)</a>
+  </p>
+
+  <p><a href="{% url 'lgpd:meus_consentimentos' %}">Ver meus consentimentos e revogá-los ›</a></p>
+  <hr class="my-4">
+  <p><a href="{% url 'lgpd:excluir_conta' %}" class="text-danger">Excluir minha conta e todos os meus dados</a></p>
+
+{% endblock %}
