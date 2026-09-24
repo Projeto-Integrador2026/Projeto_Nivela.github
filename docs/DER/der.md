@@ -21,7 +21,7 @@
 | dois_fatores_ativo | BOOLEAN | RF07 — 2FA obrigatório |
 | ativo | BOOLEAN | Falso após exclusão de conta (RF11) |
 
-**tokens_redefinicao_senha** — ✅ Implementado (RF04, recuperação de senha já documentada em `fluxo-recuperacao-senha.md`)
+**Recuperação de senha (RF04)** — ✅ Implementado, porém **sem tabela própria**: o token é gerado de forma *stateless* via `PasswordResetTokenGenerator` nativo do Django (combina hash da senha, timestamp e ID do usuário), sem persistência em banco. Ver `fluxo-recuperacao-senha.md` para detalhes completos.
 
 **responsaveis_legais** — ❌ Planejado, ainda não implementado (depende do módulo LGPD)
 
@@ -81,7 +81,8 @@
 | usuarios 1 → N logs_auditoria | Ações de um usuário são registradas em log |
 
 ## 3. Diagrama Entidade-Relacionamento
-_Insira aqui a imagem do DER, gerada a partir do script SQL (ex: via dbdiagram.io, importando o schema, ou pgAdmin com engenharia reversa)._
+
+![Diagrama Entidade-Relacionamento — Projeto Nivela](../assets/diagrama_BD_Nivela.png)
 
 
 ## 4. Dicionário de dados (campos sensíveis)
@@ -100,7 +101,7 @@ _Insira aqui a imagem do DER, gerada a partir do script SQL (ex: via dbdiagram.i
 | Categoria | Status |
 |-----------|--------|
 | Autenticação (usuarios, sessões, 2FA, força bruta) | ✅ Implementado |
-| Recuperação de senha (tokens) | ⏳ Em desenvolvimento |
+| Recuperação de senha (tokens) | ✅ Implementado |
 | Turmas | ✅ App existe, estrutura interna a confirmar |
 | Diagnóstico e Nivelamento | ⏳ A localizar dentro dos apps existentes |
 | Módulo Pedagógico (trilhas, atividades) | ❌ Planejado |
@@ -118,5 +119,5 @@ _Insira aqui a imagem do DER, gerada a partir do script SQL (ex: via dbdiagram.i
 
 ---
 
-> Última atualização: _(14/09/2026)_
+> Última atualização: _(22/09/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_
