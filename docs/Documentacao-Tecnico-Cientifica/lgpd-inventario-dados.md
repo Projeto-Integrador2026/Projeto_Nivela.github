@@ -1,4 +1,4 @@
-# LGPD — Inventário de dados pessoais (itens 4.1 a 4.6)
+# LGPD — Inventário de dados pessoais (itens 4.1 a 4.11)
 
 ## 1. Dados pessoais tratados (4.1) e suas finalidades (4.2)
 
@@ -134,3 +134,113 @@ Não há evidência nova para este item: as mesmas evidências dos itens 4.4 e 4
 (`print-consentimento-registrado-admin.jpg`,
 `print-consentimentos-lista-antes-revogar.jpg` e
 `print-consentimentos-revogado.jpg`) já mostram a versão e as datas gravadas.
+
+
+## 8. Funcionalidade de consulta aos dados do titular (4.8)
+
+- O titular logado acessa **Meus dados** (menu superior), que agora leva à tela
+  de consulta (`lgpd/views.py`, `meus_dados`), mostrando:
+  - **Dados da conta**: e-mail, telefone, data de criação da conta, data do
+    último acesso, e se a verificação em duas etapas está ativada.
+  - **Dados de aprendizagem e gamificação**: XP total, nível, streak atual,
+    streak recorde, quantidade de lições concluídas, quantidade de tentativas
+    de exercícios (com acertos) e o resultado do teste de nivelamento.
+- A partir dessa tela, o titular também acessa **Meus consentimentos**
+  (item 4.6), onde consulta e revoga os consentimentos dados.
+- Juntas, essas duas telas cobrem a consulta completa aos dados listados no
+  inventário do item 4.1.
+
+Evidência em `docs/Evidencias/lgpd/`:
+
+- `print-meus-dados-consulta.jpg`: tela "Meus dados" exibindo os dados da conta e de gamificação do titular logado.
+
+
+## 9. Funcionalidade de exportação dos dados (4.9)
+
+- Na tela **Meus dados**, o titular logado tem o botão **"Baixar meus dados
+  (JSON)"**, que aciona a view `exportar_dados` (`lgpd/views.py`).
+- O arquivo `meus-dados-nivela.json` gerado contém:
+  - **Conta**: e-mail, telefone, data de criação e último acesso.
+  - **Gamificação**: XP total, nível, streaks, lista completa de lições
+    concluídas, tentativas de exercícios e resultados do teste de
+    nivelamento (não só os totais mostrados na tela, o histórico inteiro).
+  - **Consentimentos**: todos os registros do titular, com finalidade,
+    versão do termo e as datas de concessão/revogação.
+- O formato JSON é estruturado e de uso comum, atendendo ao requisito de
+  portabilidade dos dados (LGPD, art. 18, V).
+
+Evidência em `docs/Evidencias/lgpd/`:
+
+- `print-exportacao-json.jpg`: botão de exportação na tela "Meus dados" e o conteúdo do arquivo `meus-dados-nivela.json` baixado, incluindo o histórico de consentimento do titular.
+
+
+## 10. Funcionalidade de exclusão dos dados pessoais (4.10)
+
+- Na tela **Meus dados**, o titular logado tem o link **"Excluir minha conta
+  e todos os meus dados"**, que leva à tela de confirmação
+  (`lgpd/views.py`, `excluir_conta`).
+- Antes de excluir, o sistema exige que o titular **confirme a senha atual**
+  e **marque uma caixa de confirmação explícita**. Uma senha incorreta
+  recusa o pedido sem apagar nada.
+- Ao confirmar corretamente, o sistema:
+  1. Cria um registro em `SolicitacaoTitular` com um identificador anônimo
+     (`uuid4`), tipo "Exclusão dos dados" e status "Concluída".
+  2. Apaga a conta (`usuario.delete()`), o que **remove em cascata** (via
+     `on_delete=CASCADE` dos models): telefone e demais dados da conta,
+     progresso nas lições, tentativas de exercícios, perfil de gamificação
+     (XP/streak), resultados de nivelamento e registros de consentimento.
+  3. Encerra a sessão do titular (`logout`) e o redireciona para o login,
+     com uma mensagem de confirmação exibindo o **protocolo de atendimento**
+     (o identificador anônimo).
+- O registro em `SolicitacaoTitular` **permanece** depois da exclusão, mas
+  com o campo `usuario` nulo (`on_delete=SET_NULL`), preservando a prova de
+  que o direito foi atendido sem manter nenhum dado pessoal associado a ela.
+
+Evidências em `docs/Evidencias/lgpd/`:
+
+- `print-exclusao-confirmacao.jpg`: tela de confirmação com o aviso, campo de senha e checkbox.
+- `print-exclusao-senha-incorreta.jpg`: tentativa de exclusão com senha errada, recusada.
+- `print-exclusao-sucesso.jpg`: mensagem de sucesso na tela de login, com o protocolo de atendimento.
+- `print-exclusao-solicitacao-anonima.jpg`: registro em `SolicitacaoTitular` no Admin, com identificador anônimo preservado e usuário nulo.
+
+
+## 11. Fluxo de atendimento aos direitos do titular (4.11)
+
+O Nivela atende aos direitos do titular (art. 18 da LGPD) por **autoatendimento**:
+o próprio titular exerce cada direito diretamente na plataforma, sem precisar
+abrir um chamado ou esperar uma pessoa da equipe processar o pedido. Isso faz
+com que o atendimento seja **imediato**, bem abaixo do prazo máximo de 15 dias
+previsto no art. 19 da LGPD.
+
+| Direito (art. 18, LGPD) | Onde o titular exerce | O que o sistema faz | Prazo |
+|---|---|---|---|
+| Confirmação do tratamento e acesso aos dados (incisos I e II) | Tela **Meus dados** (4.8) | Exibe em tempo real todos os dados da conta e de gamificação | Imediato |
+| Portabilidade dos dados (inciso V) | Botão "Baixar meus dados (JSON)" (4.9) | Gera e entrega o arquivo para download na hora | Imediato |
+| Revogação do consentimento (art. 8º, §5º) | Tela **Meus consentimentos** (4.6) | Marca o consentimento como revogado e grava a data | Imediato |
+| Eliminação dos dados (inciso VI) | Link "Excluir minha conta e todos os meus dados" (4.10) | Exclui a conta em cascata e registra um protocolo anônimo de atendimento | Imediato |
+
+**Autenticação como salvaguarda:** todos os quatro fluxos exigem que o titular
+esteja logado (`@login_required`), e a exclusão exige ainda a senha atual como
+segunda confirmação — isso evita que alguém exerça esses direitos em nome de
+outra pessoa.
+
+**Prova do atendimento:** o model `SolicitacaoTitular` (`lgpd/models.py`) guarda
+o registro formal do pedido mais sensível e irreversível (exclusão), com um
+identificador anônimo que sobrevive mesmo depois que os dados pessoais da
+pessoa deixam de existir (`on_delete=SET_NULL`). Os demais direitos (acesso,
+exportação e revogação) são reversíveis ou não destroem informação, e por
+isso sua evidência de atendimento já fica naturalmente nos próprios dados
+alterados (ex.: `data_revogacao` em `RegistroConsentimento`) ou nas telas
+que os exibem em tempo real.
+
+**Canal alternativo:** hoje não existe um canal humano separado (e-mail de
+DPO, formulário de contato) para quem preferir não usar o autoatendimento;
+todo o atendimento aos direitos do titular acontece pela própria plataforma.
+Isso é registrado aqui como uma limitação conhecida, não coberta pelo
+Requisito 4 atual.
+
+Não há evidência nova neste item: as evidências dos itens 4.6, 4.8, 4.9 e
+4.10 já demonstram, juntas, o fluxo completo de ponta a ponta.
+
+> Última atualização: _(23/09/2026)_
+> Por _(Beatriz Mguel)_
