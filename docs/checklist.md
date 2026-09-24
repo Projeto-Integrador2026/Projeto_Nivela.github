@@ -47,9 +47,9 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [X] 4.5 Consentimento associado à finalidade
 - [X] 4.6 Possibilidade de revogação do consentimento
 - [X] 4.7 Registro de data e versão do consentimento
-- [ ] 4.8 Funcionalidade de consulta aos dados do titular
-- [ ] 4.9 Funcionalidade de exportação dos dados
-- [ ] 4.10 Funcionalidade de exclusão dos dados pessoais
+- [X] 4.8 Funcionalidade de consulta aos dados do titular
+- [X] 4.9 Funcionalidade de exportação dos dados
+- [X] 4.10 Funcionalidade de exclusão dos dados pessoais
 - [ ] 4.11 Fluxo de atendimento aos direitos documentado
 
 ## 5. Auditoria e Logs
