@@ -50,7 +50,7 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [X] 4.8 Funcionalidade de consulta aos dados do titular
 - [X] 4.9 Funcionalidade de exportação dos dados
 - [X] 4.10 Funcionalidade de exclusão dos dados pessoais
-- [ ] 4.11 Fluxo de atendimento aos direitos documentado
+- [X] 4.11 Fluxo de atendimento aos direitos documentado
 
 ## 5. Auditoria e Logs
 
