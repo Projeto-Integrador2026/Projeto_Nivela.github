@@ -20,6 +20,9 @@
 | Tratamento de dados pessoais sem consentimento explícito do titular | Tela de aceite de Termos de Uso e Política de Privacidade (RF10) | ✅ Implementado | evidências em `docs/Evidencias/lgpd/` |
 | Usuário sem controle sobre os próprios dados (violação dos direitos do titular, LGPD) | Funcionalidades de consulta, exportação e exclusão de dados pessoais (RF11, RF12) | ✅ Implementado | evidências em `docs/Evidencias/lgpd/` |
 | Retenção indevida de dados por tempo indeterminado | Política de retenção e descarte de dados definida (RNF09) | ✅ Implementado | evidências em `docs/Evidencias/lgpd/` |
+| Tratamento de dados sem consentimento explícito do titular | Cadastro sem etapa de aceite de termos | Tela de aceite de Termos de Uso e Política de Privacidade (RF10) | ✅ Implementado |
+| Ausência de controle do titular sobre os próprios dados | Titular sem meios de consultar/exportar/excluir seus dados | Funcionalidades de consulta, exportação e exclusão (RF11, RF12) | ✅ Implementado |
+| Retenção indevida de dados por tempo indeterminado | Dados mantidos sem prazo definido | Política de retenção e descarte de dados (RNF09) | ✅ Implementado |
 
 ## 2. Riscos identificados, sem contramedida implementada (pendentes)
 
