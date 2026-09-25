@@ -85,7 +85,7 @@ O sistema segue o padrão **MVT (Model-View-Template)**, padrão do framework Dj
 | Vazamento de senha em texto plano | Senha armazenada sem proteção | Hash PBKDF2 com salt único por usuário | ✅ Implementado |
 | Sequestro de sessão | Reutilização de sessão após logout | Invalidação de sessão no servidor ao encerrar (RF09) | ✅ Implementado |
 | Bypass de autenticação | Acesso sem completar a autenticação completa | 2FA obrigatório via middleware, aplicado a todos os perfis | ✅ Implementado |
-| Acesso não autorizado a dados de menores | Tratamento de dados sem consentimento | Consentimento obrigatório do responsável legal (RF50) | ❌ Pendente — requisito definido, ainda não implementado |
+| Acesso não autorizado a dados de menores | Tratamento de dados sem consentimento | Consentimento obrigatório do responsável legal, via `responsaveis_legais` e `consentimentos_responsavel` (RF50) | ✅ Implementado |
 | Exposição de dados sensíveis em caso de vazamento do banco | Dados armazenados sem criptografia adicional | Criptografia simétrica (AES) de dados em repouso | ✅ Implementado  |
 
 > 📌 Análise detalhada de risco × contramedida, incluindo os itens ainda pendentes, está disponível em `risco-contramedida.md`.
