@@ -23,9 +23,9 @@
 
 **Recuperação de senha (RF04)** — ✅ Implementado, porém **sem tabela própria**: o token é gerado de forma *stateless* via `PasswordResetTokenGenerator` nativo do Django (combina hash da senha, timestamp e ID do usuário), sem persistência em banco. Ver `fluxo-recuperacao-senha.md` para detalhes completos.
 
-**responsaveis_legais** — ❌ Planejado, ainda não implementado (depende do módulo LGPD)
+**responsaveis_legais** — ✅ Implementado (confirmado via evidências funcionais em `docs/Evidencias/lgpd/`
 
-**consentimentos_responsavel** — ❌ Planejado, ainda não implementado (RF50, depende do módulo LGPD)
+**consentimentos_responsavel** — ✅ Implementado (RF50; confirmado via evidências funcionais em `docs/Evidencias/lgpd/`
 
 > ✅ Tabelas de infraestrutura de segurança já confirmadas via migrações: `django_axes` (proteção contra força bruta), `otp_static`/`otp_totp` (2FA), `django_session` (sessões), `two_factor` (fluxo de autenticação de dois fatores) — geradas automaticamente pelas bibliotecas django-axes, django-otp e django-two-factor-auth.
 
@@ -104,11 +104,11 @@
 | Recuperação de senha (tokens) | ✅ Implementado |
 | Turmas | ✅ App existe, estrutura interna a confirmar |
 | Diagnóstico e Nivelamento | ⏳ A localizar dentro dos apps existentes |
-| Módulo Pedagógico (trilhas, atividades) | ❌ Planejado |
+| Módulo Pedagógico (trilhas, atividades) |  ✅ App existe, estrutura interna a confirma |
 | Gamificação | ✅ App existe, estrutura interna a confirmar |
-| Grupos e Monitoria | ❌ Planejado |
+| Grupos e Monitoria |  ✅ App existe, estrutura interna a confirma |
 | Comunicação (chat) | ✅ App existe, estrutura interna a confirmar |
-| LGPD (responsáveis legais, consentimento) | ❌ Planejado |
+| LGPD (responsáveis legais, consentimento) | ✅ Implementado |
 | Auditoria | ⏳ Parcial (logs de segurança já existem) |
 
 ## 6. Observações de rastreabilidade
@@ -119,5 +119,5 @@
 
 ---
 
-> Última atualização: _(22/09/2026)_
+> Última atualização: _(24/09/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_
