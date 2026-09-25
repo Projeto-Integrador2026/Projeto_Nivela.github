@@ -68,7 +68,7 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [x] 6.5 Uso de criptografia documentado
 - [x] 6.6 Identificação dos ativos do sistema
 - [ ] 6.7 Identificação de ameaças e vulnerabilidades
-- [ ] 6.8 Associação risco × contramedida
+- [x] 6.8 Associação risco × contramedida
 - [ ] 6.9 Testes de segurança realizados
 - [ ] 6.10 Resultados dos testes documentados
 - [x] 6.11 Uso de artigos científicos e/ou normas técnicas
