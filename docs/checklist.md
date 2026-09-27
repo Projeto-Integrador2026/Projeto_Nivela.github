@@ -56,7 +56,7 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 
 - [X] 5.1 Logs de autenticação registrados
 - [X] 5.2 Logs de falhas e 2FA registrados
-- [ ] 5.3 Proteção contra alteração dos logs
+- [X] 5.3 Proteção contra alteração dos logs
 - [ ] 5.4 Exemplo de análise de logs apresentado
 
 ## 6. Documentação Técnico-Científica

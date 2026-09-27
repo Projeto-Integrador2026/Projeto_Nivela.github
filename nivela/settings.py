@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 from decouple import config
 # Le a variavel DATABASE_URL fornecida automaticamente pelo Render em
@@ -17,7 +17,6 @@ from decouple import config
 # desenvolvedor) quando essa variavel nao existir
 import dj_database_url
 from urllib.parse import quote
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -235,6 +234,14 @@ PASSWORD_RESET_TIMEOUT = 3600
 # nela (necessario em producao, onde a pasta nao vem no repositorio)
 (BASE_DIR / 'logs').mkdir(exist_ok=True)
 
+# Item 5.3: restringe a permissao da pasta de logs para que so o
+# proprio processo da aplicacao consiga ler/escrever nela. So tem
+# efeito real em um sistema Linux (como o Render, em producao); no
+# Windows (ambiente de desenvolvimento local) o sistema operacional
+# ignora esses bits de permissao, entao nao muda nada aqui.
+if os.name == 'posix':
+    os.chmod(BASE_DIR / 'logs', 0o700)
+
 # Configuracao de log para recuperacao de senha (itens 2.6 e 2.7)
 # Registra em arquivo todas as solicitacoes e o resultado (sucesso/falha) do processo
 LOGGING = {
@@ -251,15 +258,14 @@ LOGGING = {
       'handlers': {
           'file_recuperacao_senha': {
               'level': 'INFO',
-              'class': 'logging.FileHandler',
+              'class': 'nivela.logging_utils.FileHandlerComHashEncadeado',
               'filename': BASE_DIR / 'logs' / 'recuperacao_senha.log',
               'formatter': 'com_data',
               'encoding': 'utf-8',
           },
-          # Log de autenticacao (item 5.1): registra login e logout
           'file_autenticacao': {
               'level': 'INFO',
-              'class': 'logging.FileHandler',
+              'class': 'nivela.logging_utils.FileHandlerComHashEncadeado',
               'filename': BASE_DIR / 'logs' / 'autenticacao.log',
               'formatter': 'com_data',
               'encoding': 'utf-8',
