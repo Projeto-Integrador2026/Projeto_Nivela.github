@@ -40,4 +40,5 @@ Os itens da LGPD (RF10, RF11, RF12, RF50, RNF09) foram confirmados por meio de e
 ---
 
 > Última atualização: _(24/09/2026)_
-> Responsável pela documentação: _(Jhonathan Tonello)_
+> Responsável pela documentação: _(Jhonathan Tonello e Beatriz Miguel)_
+>>>>>>> Stashed changes
