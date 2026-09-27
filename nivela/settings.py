@@ -240,7 +240,7 @@ PASSWORD_RESET_TIMEOUT = 3600
 LOGGING = {
       'version': 1,
       'disable_existing_loggers': False,
-      # Data e hora em cada linha do log (auditoria, itens 2.6 e 2.7)
+      # Data e hora em cada linha do log (auditoria, itens 2.6, 2.7 e 5.1)
       'formatters': {
           'com_data': {
               'format': '{asctime} {levelname} {message}',
@@ -256,10 +256,23 @@ LOGGING = {
               'formatter': 'com_data',
               'encoding': 'utf-8',
           },
+          # Log de autenticacao (item 5.1): registra login e logout
+          'file_autenticacao': {
+              'level': 'INFO',
+              'class': 'logging.FileHandler',
+              'filename': BASE_DIR / 'logs' / 'autenticacao.log',
+              'formatter': 'com_data',
+              'encoding': 'utf-8',
+          },
       },
       'loggers': {
           'usuarios.recuperacao_senha': {
               'handlers': ['file_recuperacao_senha'],
+              'level': 'INFO',
+              'propagate': True,
+          },
+          'usuarios.autenticacao': {
+              'handlers': ['file_autenticacao'],
               'level': 'INFO',
               'propagate': True,
           },
