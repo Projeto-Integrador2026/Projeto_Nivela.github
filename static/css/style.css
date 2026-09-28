@@ -1,8 +1,233 @@
+/* =========================================================
+   NIVELA — Design System
+   Paleta extraída da logo: marinho, roxo e verde-limão.
+   Tipografia: Poppins (títulos) + Inter (corpo/dados).
+   Motivo de assinatura: barras em degrau (1-2-3-4 da logo),
+   reaproveitado nas barras de progresso de XP/nível.
+   ========================================================= */
+
+:root {
+  --nv-navy-900: #071b38;
+  --nv-navy-800: #0b2a54;
+  --nv-navy-700: #123a6e;
+  --nv-purple-700: #46296b;
+  --nv-purple-600: #5b3a85;
+  --nv-purple-100: #efe9f7;
+  --nv-green-600: #7aa80f;
+  --nv-green-500: #8dbf12;
+  --nv-green-100: #eef7d9;
+  --nv-bg: #f6f7fb;
+  --nv-surface: #ffffff;
+  --nv-text: #1e2433;
+  --nv-text-muted: #5c6478;
+  --nv-border: #e2e5ee;
+
+  --nv-radius-sm: 8px;
+  --nv-radius-md: 14px;
+  --nv-shadow: 0 2px 10px rgba(11, 42, 84, 0.06);
+  --nv-shadow-md: 0 8px 24px rgba(11, 42, 84, 0.10);
+
+  --bs-primary: var(--nv-purple-600);
+  --bs-primary-rgb: 91, 58, 133;
+}
+
+/* ---------- Base ---------- */
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background-color: var(--nv-bg);
+  color: var(--nv-text);
+}
+
+h1, h2, h3, h4, h5, h6,
+.navbar-brand, .fw-bold.card-title {
+  font-family: "Poppins", "Inter", system-ui, sans-serif;
+}
+
+a { color: var(--nv-purple-600); }
+a:hover { color: var(--nv-purple-700); }
+
+::selection { background: var(--nv-green-500); color: var(--nv-navy-900); }
+
+/* Visible keyboard focus (acessibilidade) */
+a:focus-visible, button:focus-visible, .btn:focus-visible,
+input:focus-visible, .form-control:focus-visible {
+  outline: 2px solid var(--nv-green-600);
+  outline-offset: 2px;
+}
+
+/* ---------- Navbar ---------- */
+.navbar.bg-dark {
+  background: linear-gradient(180deg, var(--nv-navy-800), var(--nv-navy-900)) !important;
+  border-bottom: 3px solid var(--nv-green-500);
+}
+
+.navbar-brand .logo-nivela {
+  height: 40px;
+  width: auto;
+  background: transparent;
+  padding: 0;
+}
+
+.navbar .nav-link {
+  font-weight: 500;
+  position: relative;
+  color: rgba(255, 255, 255, 0.75) !important;
+  transition: color 0.15s ease;
+}
+
+.navbar .nav-link:hover { color: #ffffff !important; }
+
+.navbar .nav-link.active,
+.navbar .nav-item a.nav-link[aria-current="page"] {
+  color: #ffffff !important;
+}
+
+.navbar .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: -2px;
+  height: 2px;
+  background: var(--nv-green-500);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.18s ease;
+}
+
+.navbar .nav-link:hover::after,
+.navbar .nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background-color: var(--nv-green-500);
+  border-color: var(--nv-green-500);
+  color: var(--nv-navy-900);
+  font-weight: 600;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--nv-green-600);
+  border-color: var(--nv-green-600);
+  color: var(--nv-navy-900);
+}
+
+.btn-outline-primary {
+  color: var(--nv-purple-600);
+  border-color: var(--nv-purple-600);
+  font-weight: 600;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--nv-purple-600);
+  border-color: var(--nv-purple-600);
+  color: #fff;
+}
+
+/* ---------- Text / bg utility overrides (mantém Bootstrap, troca a cor) ---------- */
+.text-primary { color: var(--nv-purple-600) !important; }
+.bg-primary { background-color: var(--nv-purple-600) !important; }
+.bg-dark { background-color: var(--nv-navy-800) !important; }
+
+/* ---------- Cards ---------- */
+.card {
+  border: 1px solid var(--nv-border);
+  border-radius: var(--nv-radius-md);
+  box-shadow: var(--nv-shadow);
+}
+
+.card.shadow-sm { box-shadow: var(--nv-shadow) !important; }
+
+a.card, .card.h-100 {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-header.bg-dark {
+  background: var(--nv-navy-800) !important;
+  border-bottom: none;
+}
+
+/* ---------- Progress em degrau (motivo da logo) ---------- */
+.progress {
+  background-color: var(--nv-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar.bg-primary,
+.progress-bar {
+  background: linear-gradient(90deg, var(--nv-purple-600), var(--nv-green-500)) !important;
+}
+
+/* Versão "em degrau": 4 segmentos, ecoa as barras 1-2-3-4 da logo.
+   Uso: <div class="nv-step-progress"><span class="nv-step-seg is-filled">...</span></div> */
+.nv-step-progress {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 34px;
+}
+
+.nv-step-seg {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  background: #c7ccdc;
+  border: 1px solid rgba(11, 42, 84, 0.18);
+  transition: background 0.2s ease, height 0.2s ease;
+}
+
+/* Dentro de um card escuro (.text-white), o segmento vazio usa branco
+   translucido em vez do cinza, que sumiria no fundo escuro. */
+.text-white .nv-step-seg:not(.is-filled) {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.nv-step-seg:nth-child(1) { height: 14px; }
+.nv-step-seg:nth-child(2) { height: 20px; }
+.nv-step-seg:nth-child(3) { height: 26px; }
+.nv-step-seg:nth-child(4) { height: 34px; }
+
+.nv-step-seg.is-filled:nth-child(1) { background: var(--nv-navy-700); }
+.nv-step-seg.is-filled:nth-child(2) { background: var(--nv-purple-600); }
+.nv-step-seg.is-filled:nth-child(3) { background: var(--nv-navy-700); }
+.nv-step-seg.is-filled:nth-child(4) { background: var(--nv-green-500); }
+
+/* ---------- Badges de nível / XP ---------- */
+.nv-level-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: linear-gradient(160deg, var(--nv-green-500), var(--nv-green-600));
+  color: var(--nv-navy-900);
+}
+
+/* ---------- Chat ---------- */
+.card-header.bg-light { background: var(--nv-purple-100) !important; }
+
+/* ---------- Logo utilitário ---------- */
 .logo-nivela {
-    height: 20px;
-    width: auto;
-    border-radius: 6px;
-    padding: 2px;
-    background-color: #ffffff;
-    object-fit: contain;
+  height: 20px;
+  width: auto;
+  border-radius: 6px;
+  padding: 2px;
+  background-color: transparent;
+  object-fit: contain;
+}
+
+/* ---------- Rodapé ---------- */
+footer.bg-dark {
+  background: var(--nv-navy-900) !important;
+}
+
+/* ---------- Motion: respeita usuários que pedem menos animação ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
