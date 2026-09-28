@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nivela - Descubra seu nível em Python{% endblock %}
+
+{% block extra_head %}
+<link href="{% static 'css/nivelamento.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="nv-quiz" id="nv-quiz">
+    <div class="nv-quiz-card">
+
+        <!-- ETAPA 1: apresentação -->
+        <section data-etapa="intro" class="text-center">
+            <div class="nv-quiz-escadinha" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <h1 class="nv-quiz-titulo" tabindex="-1" data-foco>Descubra seu nível em Python</h1>
+            <p class="nv-quiz-texto">
+                São 8 perguntas rápidas de múltipla escolha. Não é prova:
+                o objetivo é colocar você na trilha certa, do Nível 1 ao Nível 4.
+            </p>
+            <ul class="nv-quiz-chips">
+                <li>8 perguntas</li>
+                <li>cerca de 3 minutos</li>
+                <li>sem nota eliminatória</li>
+            </ul>
+            <button type="button" class="btn btn-primary btn-lg" id="nv-comecar">Começar</button>
+            <noscript><p class="nv-quiz-texto mt-3">Ative o JavaScript para fazer o teste.</p></noscript>
+        </section>
+
+        <!-- ETAPA 2: perguntas (uma por vez) -->
+        <section data-etapa="pergunta" hidden>
+            <div class="nv-quiz-topo">
+                <span class="nv-quiz-selo">Nivelamento · Python</span>
+                <span class="nv-quiz-contador" id="nv-contador" aria-live="polite"></span>
+            </div>
+            <div class="nv-quiz-trilha" id="nv-trilha" role="progressbar" aria-label="Progresso do teste">
+                <span id="nv-trilha-fill"></span>
+            </div>
+
+            <h2 class="nv-quiz-enunciado" id="nv-enunciado" tabindex="-1" data-foco></h2>
+            <pre class="nv-quiz-codigo" id="nv-codigo" hidden></pre>
+            <div id="nv-opcoes" role="radiogroup" aria-labelledby="nv-enunciado"></div>
+
+            <div class="nv-quiz-rodape">
+                <span class="nv-quiz-dica">Dica: tecle de 1 a 4 para responder</span>
+                <button type="button" class="btn btn-primary" id="nv-proxima" disabled>Próxima</button>
+            </div>
+        </section>
+
+        <!-- ETAPA 3: resultado -->
+        <section data-etapa="resultado" class="text-center" hidden>
+            <span class="nv-quiz-selo">Seu resultado</span>
+
+            <div class="nv-escada" aria-hidden="true">
+                <div class="nv-degrau"><span>1</span></div>
+                <div class="nv-degrau"><span>2</span></div>
+                <div class="nv-degrau"><span>3</span></div>
+                <div class="nv-degrau">
+                    <span>4</span>
+                    <svg class="nv-trofeu" xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5q0 .807-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33 33 0 0 1 2.5.5m.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935m10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935"/>
+                    </svg>
+                </div>
+            </div>
+
+            <h2 class="nv-quiz-titulo" id="nv-res-titulo" tabindex="-1" data-foco></h2>
+            <p class="nv-quiz-texto" id="nv-res-texto"></p>
+            <p class="nv-quiz-acertos" id="nv-res-acertos"></p>
+
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <a class="btn btn-primary" href="/turmas/">Ir para as turmas</a>
+                <button type="button" class="btn btn-outline-primary" id="nv-refazer">Refazer o teste</button>
+            </div>
+        </section>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/nivelamento.js' %}"></script>
+{% endblock %}

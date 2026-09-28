@@ -15,3 +15,7 @@ def chat(request):
 
 def gamificacao(request):
     return render(request, 'gamificacao.html')
+
+
+def nivelamento(request):
+    return render(request, 'nivelamento.html')

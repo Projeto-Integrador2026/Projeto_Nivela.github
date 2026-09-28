@@ -32,4 +32,5 @@ urlpatterns = [
     path('turmas/', views.turmas, name='turmas'),
     path('chat/', views.chat, name='chat'),
     path('gamificacao/', views.gamificacao, name='gamificacao'),
+    path('nivelamento/', views.nivelamento, name='nivelamento'),
 ]
