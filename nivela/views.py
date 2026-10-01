@@ -5,10 +5,6 @@ def home(request):
     return render(request, 'home.html')
 
 
-def chat(request):
-    return render(request, 'chat.html')
-
-
 def gamificacao(request):
     return render(request, 'gamificacao.html')
 
