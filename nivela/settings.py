@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'lgpd',
     'chat',
     'axes',
+    'nivelamento',
 ]
 
 MIDDLEWARE = [
