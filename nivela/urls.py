@@ -11,6 +11,7 @@ urlpatterns = [
     path('', include('lgpd.urls')),
     path('', include('turmas.urls')),
     path('', include('chat.urls')),
+    path('', include('gamificacao.urls')),
 
     # Recuperacao de senha (item 2.1) - views prontas do Django
     path('recuperar-senha/',
@@ -31,6 +32,5 @@ urlpatterns = [
     # Logout (o Django 5 so aceita sair via POST, feito pelo botao Sair do menu)
     path('sair/', auth_views.LogoutView.as_view(), name='logout'),
     path('', views.home, name='home'),
-    path('gamificacao/', views.gamificacao, name='gamificacao'),
     path('nivelamento/', views.nivelamento, name='nivelamento'),
 ]
