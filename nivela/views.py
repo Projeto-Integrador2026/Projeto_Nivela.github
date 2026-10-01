@@ -5,9 +5,5 @@ def home(request):
     return render(request, 'home.html')
 
 
-def gamificacao(request):
-    return render(request, 'gamificacao.html')
-
-
 def nivelamento(request):
     return render(request, 'nivelamento.html')
