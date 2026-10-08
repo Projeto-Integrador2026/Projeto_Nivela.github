@@ -1,36 +1,16 @@
-from usuarios import views as usuarios_views
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth import views as auth_views
-from . import views
 from two_factor.urls import urlpatterns as tf_urls
+from . import views
 
 urlpatterns = [
     path('', include(tf_urls)),
     path('admin/', admin.site.urls),
     path('', include('lgpd.urls')),
+    path('', include('usuarios.urls')),
     path('', include('turmas.urls')),
     path('', include('chat.urls')),
     path('', include('gamificacao.urls')),
     path('', include('nivelamento.urls')),
-
-    # Recuperacao de senha (item 2.1) - views prontas do Django
-    path('recuperar-senha/',
-         usuarios_views.RecuperarSenhaView.as_view(template_name='usuarios/password_reset_form.html'),
-         name='password_reset'),
-    path('recuperar-senha/enviado/',
-         auth_views.PasswordResetDoneView.as_view(template_name='usuarios/password_reset_done.html'),
-         name='password_reset_done'),
-    path('recuperar-senha/confirmar/<uidb64>/<token>/',
-         usuarios_views.RedefinirSenhaView.as_view(template_name='usuarios/password_reset_confirm.html'),
-         name='password_reset_confirm'),
-    path('recuperar-senha/concluido/',
-         auth_views.PasswordResetCompleteView.as_view(template_name='usuarios/password_reset_complete.html'),
-         name='password_reset_complete'),
-    
-    # Cadastro de novos usuarios (link "Cadastre-se" da tela de login)
-    path('cadastro/', usuarios_views.CadastroView.as_view(), name='cadastro'),
-    # Logout (o Django 5 so aceita sair via POST, feito pelo botao Sair do menu)
-    path('sair/', auth_views.LogoutView.as_view(), name='logout'),
     path('', views.home, name='home'),
 ]
