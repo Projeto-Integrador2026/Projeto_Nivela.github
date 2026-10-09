@@ -17,6 +17,7 @@ class LoginRequiredMiddleware:
         '/admin/',            # o admin tem login proprio
         '/static/',
         '/media/',
+        '/favicon.ico',       # o navegador pede sozinho; nao pode ser redirecionado
     ]
 
     def __init__(self, get_response):
@@ -46,6 +47,7 @@ class Force2FASetupMiddleware:
         '/sair/',      # logout do app usuarios
         '/static/',
         '/media/',
+        '/favicon.ico',   # o navegador pede sozinho; nao pode ser redirecionado
     ]
 
     def __init__(self, get_response):
