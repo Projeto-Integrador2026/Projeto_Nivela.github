@@ -8,7 +8,16 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from lgpd.utils import mascarar_email
 from .forms import CadastroForm
-
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.views import View
+from django.shortcuts import redirect
+from django.urls import reverse
 
 # Views customizadas para o Requisito 2 - Recuperacao de Senha
 
@@ -68,21 +77,17 @@ class RedefinirSenhaView(PasswordResetConfirmView):
 class CadastroView(CreateView):
     """
     Tela de cadastro (link 'Cadastre-se' da tela de login).
-
-    A senha e gravada com hash (PBKDF2) pelo UserCreationForm e passa
-    pelos validadores de AUTH_PASSWORD_VALIDATORS. Depois de cadastrar,
-    o usuario e enviado para a tela de login.
     """
     form_class = CadastroForm
     template_name = 'usuarios/cadastro.html'
     success_url = reverse_lazy('two_factor:login')
 
     def form_valid(self, form):
+        # 1. Define a conta como inativa antes de a guardar na base de dados (A-06)
+        form.instance.is_active = False
         resposta = super().form_valid(form)
 
-        # Registro explícito do consentimento aos Termos de Uso (item 4.4),
-        # já associado à finalidade "termos_uso" e à versão vigente do
-        # termo no momento do cadastro.
+        # 2. Registo explícito do consentimento aos Termos de Uso (mantido)
         RegistroConsentimento.objects.create(
             usuario=self.object,
             finalidade=RegistroConsentimento.Finalidade.TERMOS_USO,
@@ -91,4 +96,43 @@ class CadastroView(CreateView):
             data_concessao=timezone.now(),
         )
 
+        # 3. Gerar token seguro de ativação e construir o link
+        current_site = get_current_site(self.request)
+        uid = urlsafe_base64_encode(force_bytes(self.object.pk))
+        token = default_token_generator.make_token(self.object)
+        caminho = reverse('ativar_conta', kwargs={'uidb64': uid, 'token': token})
+        link_ativacao = f"https://{current_site.domain}{caminho}"
+
+        # 4. Enviar o e-mail (funciona graças à correção do SMTP em produção)
+        send_mail(
+            subject='Ativação da sua conta no Nivela',
+            message=f'Bem-vindo ao Nivela!\n\nPara ativar a sua conta e configurar o 2FA, clique no link abaixo:\n\n{link_ativacao}\n\nSe não solicitou este registo, ignore este e-mail.',
+            from_email=None,
+            recipient_list=[self.object.email],
+        )
+
+        # 5. Avisar o utilizador no ecrã
+        messages.success(self.request, 'Conta criada! Verifique o seu e-mail para ativar o acesso.')
         return resposta
+
+
+class AtivarContaView(View):
+    """
+    Processa o clique no link de ativação enviado por e-mail.
+    """
+    def get(self, request, uidb64, token):
+        Usuario = get_user_model()
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            usuario = Usuario.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, Usuario.DoesNotExist):
+            usuario = None
+
+        if usuario is not None and default_token_generator.check_token(usuario, token):
+            usuario.is_active = True
+            usuario.save()
+            messages.success(request, 'A sua conta foi ativada com sucesso! Inicie sessão para configurar o seu autenticador.')
+        else:
+            messages.error(request, 'O link de ativação é inválido ou já expirou.')
+            
+        return redirect('two_factor:login')
