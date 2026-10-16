@@ -82,6 +82,27 @@ class CadastroView(CreateView):
     template_name = 'usuarios/cadastro.html'
     success_url = reverse_lazy('two_factor:login')
 
+    def post(self, request, *args, **kwargs):
+        # Interceta o envio antes da validação do formulário (A-04)
+        email_digitado = request.POST.get('email')
+        Usuario = get_user_model()
+        
+        # Se o e-mail já existir na base de dados
+        if email_digitado and Usuario.objects.filter(email=email_digitado).exists():
+            # 1. Envia um aviso silencioso ao dono real
+            send_mail(
+                subject='Tentativa de novo registo no Nivela',
+                message='Alguém tentou criar uma conta com este e-mail no Nivela, mas a sua conta já existe.\n\nSe foi você, basta fazer o login normal ou utilizar a opção "Recuperar Senha".\nSe não foi você, pode ignorar este e-mail; a sua conta continua segura.',
+                from_email=None,
+                recipient_list=[email_digitado],
+            )
+            # 2. Finge que o cadastro foi um sucesso para quem preencheu o formulário
+            messages.success(request, 'Conta criada! Verifique o seu e-mail para ativar o acesso.')
+            return redirect(self.success_url)
+            
+        # Se o e-mail não existir, segue o fluxo normal do Django
+        return super().post(request, *args, **kwargs)
+
     def form_valid(self, form):
         # 1. Define a conta como inativa antes de a guardar na base de dados (A-06)
         form.instance.is_active = False
