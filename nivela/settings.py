@@ -333,3 +333,8 @@ AXES_USERNAME_CALLABLE = 'usuarios.axes_utils.obter_username_login'
    #    Mantem os padroes ('username', 'ip_address') e acrescenta os campos
    #    reais do formulario de login com 2FA.
 AXES_SENSITIVE_PARAMETERS = ['username', 'ip_address', 'auth-username', 'auth-password']
+
+# ==========================================
+# Configurações do django-two-factor-auth
+# ==========================================
+TWO_FACTOR_PATCH_ADMIN = True
