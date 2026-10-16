@@ -70,6 +70,8 @@ class SolicitacaoTitular(models.Model):
     )
     data_solicitacao = models.DateTimeField(default=timezone.now)
     data_conclusao = models.DateTimeField(null=True, blank=True)
+    # Descricao do atendimento (A-13). Nao deve conter dados pessoais.
+    detalhes = models.TextField(blank=True, default="")
 
     class Meta:
         ordering = ["-data_solicitacao"]

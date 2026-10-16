@@ -1,14 +1,26 @@
+"""
+Módulo de Views da LGPD (Lei Geral de Proteção de Dados - Lei nº 13.709/2018).
+
+Este arquivo reúne as visões responsáveis por garantir os direitos dos titulares de dados
+(consulta, confirmação, portabilidade, revogação de consentimento e eliminação de dados)
+e a exibição dos documentos legais (Termos de Uso e Política de Privacidade).
+"""
+
 import json
 import uuid
 
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.db import transaction
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.views.generic import TemplateView
 
+# Módulos de terceiros e do projeto para segurança e auditoria
+from axes.models import AccessAttempt, AccessFailureLog, AccessLog
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from gamificacao.models import (
@@ -17,17 +29,32 @@ from gamificacao.models import (
     ResultadoNivelamento,
     TentativaExercicio,
 )
-
 from .models import RegistroConsentimento, SolicitacaoTitular
 
 
+# ==============================================================================
+# 1. DIREITOS DO TITULAR - CONSULTA E PORTABILIDADE (LGPD ART. 18, II e V)
+# ==============================================================================
+
 @login_required
-def meus_dados(request):
+def meus_dados(request: HttpRequest) -> HttpResponse:
     """
-    Tela "Meus dados": consulta que o titular tem aos proprios dados
-    pessoais tratados pelo Nivela (item 4.8 do checklist LGPD).
+    Tela "Meus dados": garante a confirmação da existência de tratamento e o acesso
+    aos dados pessoais do titular (LGPD, Art. 18, I e II / Requisito 4.8).
+
+    Registra a solicitação de acesso na tabela SolicitacaoTitular para auditoria (A-13).
     """
     usuario = request.user
+
+    # Registra o atendimento ao direito de acesso (A-13)
+    SolicitacaoTitular.objects.create(
+        usuario=usuario,
+        identificador_anonimo=uuid.uuid4().hex,
+        tipo=SolicitacaoTitular.Tipo.ACESSO,
+        status=SolicitacaoTitular.Status.CONCLUIDA,
+        data_conclusao=timezone.now(),
+        detalhes="Consulta realizada pelo titular à tela Meus Dados."
+    )
 
     tem_2fa = TOTPDevice.objects.filter(user=usuario, confirmed=True).exists()
     perfil = PerfilGamificacao.objects.filter(usuario=usuario).first()
@@ -48,13 +75,24 @@ def meus_dados(request):
 
 
 @login_required
-def exportar_dados(request):
+def exportar_dados(request: HttpRequest) -> HttpResponse:
     """
-    Exportacao dos dados pessoais do titular em formato JSON,
-    para download (item 4.9 do checklist LGPD - portabilidade
-    de dados, art. 18, V).
+    Exportação dos dados pessoais do titular em formato JSON para download.
+    Garante a portabilidade dos dados (LGPD, Art. 18, V / Requisito 4.9).
+
+    Registra a solicitação de exportação na tabela SolicitacaoTitular para auditoria (A-13).
     """
     usuario = request.user
+
+    # Registra o atendimento ao direito de portabilidade/exportação (A-13)
+    SolicitacaoTitular.objects.create(
+        usuario=usuario,
+        identificador_anonimo=uuid.uuid4().hex,
+        tipo=SolicitacaoTitular.Tipo.EXPORTACAO,
+        status=SolicitacaoTitular.Status.CONCLUIDA,
+        data_conclusao=timezone.now(),
+        detalhes="Exportação de dados em formato JSON efetuada pelo titular."
+    )
 
     perfil = PerfilGamificacao.objects.filter(usuario=usuario).first()
     progresso = ProgressoLicao.objects.filter(usuario=usuario, concluida=True)
@@ -114,11 +152,15 @@ def exportar_dados(request):
     return resposta
 
 
+# ==============================================================================
+# 2. DIREITOS DO TITULAR - GESTÃO E REVOGAÇÃO DE CONSENTIMENTO (LGPD ART. 8º §5º)
+# ==============================================================================
+
 @login_required
-def meus_consentimentos(request):
+def meus_consentimentos(request: HttpRequest) -> HttpResponse:
     """
-    Tela "Meus consentimentos": lista os consentimentos do titular logado
-    e permite revogar os que estao ativos (item 4.6 do checklist LGPD).
+    Tela "Meus consentimentos": lista os consentimentos registrados para o titular logado
+    e permite a gestão e revogação das finalidades ativas (LGPD, Art. 8º / Requisito 4.6).
     """
     consentimentos = RegistroConsentimento.objects.filter(usuario=request.user)
     return render(request, 'lgpd/meus_consentimentos.html', {
@@ -128,26 +170,44 @@ def meus_consentimentos(request):
 
 @login_required
 @require_POST
-def revogar_consentimento(request, pk):
+@transaction.atomic
+def revogar_consentimento(request: HttpRequest, pk: int) -> HttpResponse:
     """
-    Revoga um consentimento especifico do titular logado (item 4.6).
-    Mantem o historico (nao apaga o registro): so marca como revogado
-    e grava a data da revogacao, usando o metodo revogar() do model.
+    Revoga um consentimento específico do titular logado (LGPD, Art. 8º §5º).
+
+    Mantém o histórico para fins de comprovação regulatória, marca o registro como revogado
+    e grava uma SolicitacaoTitular do tipo REVOGACAO (A-13).
     """
     consentimento = get_object_or_404(
         RegistroConsentimento, pk=pk, usuario=request.user
     )
     consentimento.revogar()
+
+    SolicitacaoTitular.objects.create(
+        usuario=request.user,
+        identificador_anonimo=uuid.uuid4().hex,
+        tipo=SolicitacaoTitular.Tipo.REVOGACAO,
+        status=SolicitacaoTitular.Status.CONCLUIDA,
+        data_conclusao=timezone.now(),
+        detalhes=f"Revogação do consentimento para a finalidade: {consentimento.get_finalidade_display()}"
+    )
+
     messages.success(request, 'Consentimento revogado com sucesso.')
     return redirect('lgpd:meus_consentimentos')
 
 
+# ==============================================================================
+# 3. DIREITOS DO TITULAR - ELIMINAÇÃO DE DADOS / EXCLUSÃO DE CONTA (LGPD ART. 18, VI)
+# ==============================================================================
+
 @login_required
-def excluir_conta(request):
+@transaction.atomic
+def excluir_conta(request: HttpRequest) -> HttpResponse:
     """
-    Tela de exclusao da conta e dos dados pessoais do titular
-    (item 4.10 do checklist LGPD - direito de eliminacao, art. 18, VI).
-    Exige a senha atual como confirmacao antes de excluir de verdade.
+    Exclusão definitiva da conta e eliminação dos dados pessoais (LGPD, Art. 18, VI / Requisito 4.10).
+
+    Garante atomicidade da operação (@transaction.atomic), limpa dados de tentativas
+    no django-axes (A-12) e registra o protocolo anônimo de atendimento (A-13).
     """
     erro = None
 
@@ -161,23 +221,47 @@ def excluir_conta(request):
             erro = 'Senha incorreta.'
         else:
             usuario = request.user
+            email_usuario = usuario.email
             identificador = uuid.uuid4().hex
 
+            # 1. Registra o protocolo de atendimento da solicitação de exclusão (A-13)
             SolicitacaoTitular.objects.create(
                 usuario=usuario,
                 identificador_anonimo=identificador,
                 tipo=SolicitacaoTitular.Tipo.EXCLUSAO,
                 status=SolicitacaoTitular.Status.CONCLUIDA,
                 data_conclusao=timezone.now(),
+                detalhes="Eliminação definitiva de conta e dados pessoais efetuada pelo titular."
             )
 
+            # 2. Limpa registros associados no django-axes para garantir exclusão completa (A-12)
+            AccessAttempt.objects.filter(username__iexact=email_usuario).delete()
+            AccessLog.objects.filter(username__iexact=email_usuario).delete()
+            AccessFailureLog.objects.filter(username__iexact=email_usuario).delete()
+
+            # 3. Apaga a conta do usuário e desloga
             usuario.delete()
             logout(request)
+
             messages.success(
                 request,
-                f'Sua conta e todos os seus dados pessoais foram excluídos. '
+                f'Sua conta e todos os seus dados pessoais foram excluídos com sucesso. '
                 f'Protocolo de atendimento: {identificador}'
             )
             return redirect('two_factor:login')
 
     return render(request, 'lgpd/excluir_conta.html', {'erro': erro})
+
+
+# ==============================================================================
+# 4. DOCUMENTOS LEGAIS E INSTITUCIONAIS (LGPD ART. 8º E ART. 9º)
+# ==============================================================================
+
+class TermosUsoView(TemplateView):
+    """Exibe a página pública dos Termos de Uso do sistema (A-11 / LGPD, Art. 8º)."""
+    template_name = 'lgpd/termos.html'
+
+
+class PoliticaPrivacidadeView(TemplateView):
+    """Exibe a página pública da Política de Privacidade do sistema (A-11 / LGPD, Art. 9º)."""
+    template_name = 'lgpd/privacidade.html'

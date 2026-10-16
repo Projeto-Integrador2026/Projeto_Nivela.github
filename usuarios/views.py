@@ -74,41 +74,65 @@ class RedefinirSenhaView(PasswordResetConfirmView):
 # Cadastro de novos usuarios
 
 
+def _enviar_email_seguro(destino, assunto, mensagem):
+    """Envia e-mail sem nunca derrubar a view (SMTP fora do ar nao pode dar erro 500)."""
+    try:
+        send_mail(assunto, mensagem, None, [destino])
+    except Exception:
+        logger.exception('Falha ao enviar e-mail para %s', mascarar_email(destino))
+
+
+MSG_CADASTRO = 'Conta criada! Verifique o seu e-mail para ativar o acesso.'
+
+
 class CadastroView(CreateView):
     """
     Tela de cadastro (link 'Cadastre-se' da tela de login).
+
+    - A conta nasce inativa e so e ativada pelo link enviado por e-mail (A-06).
+    - Se o e-mail ja existe, a tela responde igual a um cadastro novo (A-04).
     """
     form_class = CadastroForm
     template_name = 'usuarios/cadastro.html'
     success_url = reverse_lazy('two_factor:login')
 
     def post(self, request, *args, **kwargs):
-        # Interceta o envio antes da validação do formulário (A-04)
-        email_digitado = request.POST.get('email')
+        email_digitado = (request.POST.get('email') or '').strip()
         Usuario = get_user_model()
-        
-        # Se o e-mail já existir na base de dados
-        if email_digitado and Usuario.objects.filter(email=email_digitado).exists():
-            # 1. Envia um aviso silencioso ao dono real
-            send_mail(
-                subject='Tentativa de novo registo no Nivela',
-                message='Alguém tentou criar uma conta com este e-mail no Nivela, mas a sua conta já existe.\n\nSe foi você, basta fazer o login normal ou utilizar a opção "Recuperar Senha".\nSe não foi você, pode ignorar este e-mail; a sua conta continua segura.',
-                from_email=None,
-                recipient_list=[email_digitado],
-            )
-            # 2. Finge que o cadastro foi um sucesso para quem preencheu o formulário
-            messages.success(request, 'Conta criada! Verifique o seu e-mail para ativar o acesso.')
-            return redirect(self.success_url)
-            
-        # Se o e-mail não existir, segue o fluxo normal do Django
-        return super().post(request, *args, **kwargs)
+
+        # iexact: "A@x.com" e "a@x.com" sao a mesma pessoa
+        existente = None
+        if email_digitado:
+            existente = Usuario.objects.filter(email__iexact=email_digitado).first()
+
+        if existente is None:
+            return super().post(request, *args, **kwargs)
+
+        # E-mail ja cadastrado: valida o resto do formulario (senha, termos) para
+        # que a resposta seja IDENTICA a de um e-mail novo, sem revelar nada.
+        self.object = None  # exigido pelo CreateView ao reexibir o formulario
+        form = self.get_form()
+        form.is_valid()
+        form.errors.pop('email', None)  # esconde o "ja existe uma conta com este e-mail"
+        if form.errors:
+            return self.form_invalid(form)
+
+        _enviar_email_seguro(
+            existente.email,
+            'Tentativa de novo registo no Nivela',
+            'Alguém tentou criar uma conta com este e-mail no Nivela, mas a sua conta já existe.\n\n'
+            'Se foi você, basta fazer o login normal ou utilizar a opção "Recuperar Senha".\n'
+            'Se não foi você, pode ignorar este e-mail; a sua conta continua segura.',
+        )
+        messages.success(request, MSG_CADASTRO)
+        return redirect(self.success_url)
 
     def form_valid(self, form):
-        # 1. Define a conta como inativa antes de a guardar na base de dados (A-06)
+        # 1. Conta inativa ate clicar no link do e-mail (A-06)
         form.instance.is_active = False
         resposta = super().form_valid(form)
 
-        # 2. Registo explícito do consentimento aos Termos de Uso (mantido)
+        # 2. Consentimento aos Termos de Uso
         RegistroConsentimento.objects.create(
             usuario=self.object,
             finalidade=RegistroConsentimento.Finalidade.TERMOS_USO,
@@ -117,23 +141,22 @@ class CadastroView(CreateView):
             data_concessao=timezone.now(),
         )
 
-        # 3. Gerar token seguro de ativação e construir o link
-        current_site = get_current_site(self.request)
+        # 3. Link de ativacao. build_absolute_uri usa o esquema real da requisicao
+        #    (http no localhost, https no Render) em vez de fixar "https://".
         uid = urlsafe_base64_encode(force_bytes(self.object.pk))
         token = default_token_generator.make_token(self.object)
         caminho = reverse('ativar_conta', kwargs={'uidb64': uid, 'token': token})
-        link_ativacao = f"https://{current_site.domain}{caminho}"
+        link_ativacao = self.request.build_absolute_uri(caminho)
 
-        # 4. Enviar o e-mail (funciona graças à correção do SMTP em produção)
-        send_mail(
-            subject='Ativação da sua conta no Nivela',
-            message=f'Bem-vindo ao Nivela!\n\nPara ativar a sua conta e configurar o 2FA, clique no link abaixo:\n\n{link_ativacao}\n\nSe não solicitou este registo, ignore este e-mail.',
-            from_email=None,
-            recipient_list=[self.object.email],
+        _enviar_email_seguro(
+            self.object.email,
+            'Ativação da sua conta no Nivela',
+            f'Bem-vindo ao Nivela!\n\nPara ativar a sua conta e configurar o 2FA, '
+            f'clique no link abaixo:\n\n{link_ativacao}\n\n'
+            f'Se não solicitou este registo, ignore este e-mail.',
         )
 
-        # 5. Avisar o utilizador no ecrã
-        messages.success(self.request, 'Conta criada! Verifique o seu e-mail para ativar o acesso.')
+        messages.success(self.request, MSG_CADASTRO)
         return resposta
 
 
