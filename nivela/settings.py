@@ -224,9 +224,21 @@ LOGIN_REDIRECT_URL = 'two_factor:profile'
 LOGOUT_REDIRECT_URL = 'two_factor:login'
 
 # Configuracao de envio de email para recuperacao de senha (item 2.1)
-# Em desenvolvimento, o "console backend" imprime o email no terminal
-# em vez de enviar de verdade - facilita testar sem precisar de servidor de email
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Em desenvolvimento (DEBUG=True), o "console backend" imprime o email no terminal
+# em vez de enviar de verdade - facilita testar sem precisar de servidor de email.
+# Em producao (DEBUG=False), o email e enviado por SMTP (Gmail), com os dados
+# lidos de variaveis de ambiente, para nenhuma senha ficar no codigo.
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = config('EMAIL_HOST')
+    EMAIL_PORT = config('EMAIL_PORT', cast=int)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='Nivela <nao-responder@localhost>')
 
 # Tempo de expiracao do token de recuperacao de senha, em segundos (item 2.3)
 # 3600 segundos = 1 hora (padrao do Django e 3 dias, reduzimos para maior seguranca)
