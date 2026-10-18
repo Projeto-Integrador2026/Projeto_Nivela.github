@@ -63,3 +63,35 @@ class FileHandlerComHashEncadeado(logging.FileHandler):
             self.flush()
         except Exception:
             self.handleError(record)
+
+
+
+class RepassaFalhaEnvioEmail(logging.Handler):
+    """Leva a falha de envio do e-mail de recuperacao para o log de auditoria.
+
+    O Django (PasswordResetForm.send_mail) captura qualquer erro de envio e o
+    registra so no logger 'django.contrib.auth', com traceback de varias
+    linhas. Em producao esse registro nao chega a lugar nenhum visivel, e o
+    recuperacao_senha.log nao mostraria que o e-mail nao saiu.
+
+    Este handler escuta esse logger e grava UMA linha em
+    'usuarios.recuperacao_senha', so com o tipo do erro (sem traceback e sem
+    dados pessoais). Linha unica mantem a cadeia de hashes simples de verificar.
+    """
+
+    # Inicio da mensagem usada pelo Django 5.2.17 (fixado no requirements.txt).
+    # Se uma atualizacao mudar o texto, o teste de falha de e-mail avisa.
+    PREFIXO = 'Failed to send password reset email'
+
+    def emit(self, record):
+        try:
+            if not str(record.msg).startswith(self.PREFIXO):
+                return
+            tipo = 'desconhecido'
+            if record.exc_info and record.exc_info[0] is not None:
+                tipo = record.exc_info[0].__name__
+            logging.getLogger('usuarios.recuperacao_senha').error(
+                f'FALHA no envio do e-mail de recuperacao ({tipo})'
+            )
+        except Exception:
+            self.handleError(record)
