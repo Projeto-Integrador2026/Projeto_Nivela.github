@@ -144,7 +144,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Backends de autenticação (Suporte ao Axes + ModelBackend nativo)
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    'usuarios.backends.EmailBackend',
 ]
 
 # Gerenciamento de Sessão (Expiração após 30 min de inatividade - Requisitos 1.9 e 1.10)
@@ -193,7 +193,9 @@ AXES_IPWARE_META_PRECEDENCE_ORDER = [
     'HTTP_X_FORWARDED_FOR',
     'REMOTE_ADDR',
 ]
-
+AXES_LOWER_CASE_USERNAME = True   # Beatriz@x.com e beatriz@x.com contam como a mesma conta
+AXES_RESET_ON_SUCCESS = True      # login completo zera as falhas anteriores
+AXES_LOCKOUT_TEMPLATE = 'bloqueado.html'
 
 # ==============================================================================
 # 7. COMUNICAÇÃO E SEGURANÇA HTTP/HTTPS (SECURITY HEADERS)
