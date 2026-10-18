@@ -23,5 +23,4 @@ urlpatterns = [
     # Logout (o Django 5 so aceita sair via POST, feito pelo botao Sair do menu)
     path('sair/', auth_views.LogoutView.as_view(), name='logout'),
 
-    path('cadastro/ativar/<uidb64>/<token>/', views.AtivarContaView.as_view(), name='ativar_conta'),
 ]
