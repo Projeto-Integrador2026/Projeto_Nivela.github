@@ -127,9 +127,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Modelo customizado de usuário (suporte a login por e-mail, RF02)
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
-# Algoritmo e parâmetro de custo para hash de senhas (PBKDF2 com 1.000.000 de iterações - OWASP 2025+)
-AUTH_PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+# Algoritmo e parâmetro de custo para hash de senhas: PBKDF2-SHA256 com 1.000.000 de
+# iterações, fixado em código em usuarios/hashers.py (não depende do padrão do Django).
+PASSWORD_HASHERS = [
+    'usuarios.hashers.PBKDF2Nivela', 
 ]
 
 # Validadores de complexidade de senha
