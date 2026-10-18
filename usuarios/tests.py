@@ -45,7 +45,11 @@ class AxesPrivacidadeTests(TestCase):
     def test_login_bem_sucedido_registra_o_email_no_accesslog(self):
         self._login("b@example.com", SENHA_CERTA)
         self.assertEqual(AccessLog.objects.get().username, "b@example.com")
-
+        
+    def test_login_ignora_maiusculas_no_email(self):
+        self._login("A@Example.com", SENHA_CERTA)
+        self.assertFalse(AccessAttempt.objects.exists())
+        self.assertEqual(AccessLog.objects.count(), 1)
 
 @override_settings(
     SECURE_SSL_REDIRECT=False,
