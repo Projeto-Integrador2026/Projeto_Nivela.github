@@ -68,7 +68,7 @@ A arquitetura do Nivela foi projetada sob o princípio de **Default Deny** (Nega
 | Mecanismo | Descrição / Implementação |
 | :--- | :--- |
 | **Autenticação em Dois Fatores (2FA)** | Suporte nativo a TOTP via `django-two-factor-auth`. |
-| **Proteção contra Força Bruta** | Monitoramento e bloqueio temporário de IP/usuário por tentativas falhas com `django-axes`. |
+| **Proteção contra Força Bruta** | Monitoramento e bloqueio temporário da conta (e-mail) por tentativas falhas com `django-axes`. |
 | **Criptografia de Dados Sensíveis** | Algoritmo **Fernet (AES-128 em modo CBC)** via biblioteca `cryptography` para campos sensíveis em repouso no banco de dados. |
 | **Hash de Senhas** | Algoritmo PBKDF2 com HMAC-SHA256 padrão da W3C/Django. |
 | **Conformidade com a LGPD** | • Painel de transparência de dados coletados.<br>• Solicitação de exclusão definitiva de conta (`excluir_conta.html`).<br>• Portabilidade e download de dados do usuário (`meus_dados.html`). |

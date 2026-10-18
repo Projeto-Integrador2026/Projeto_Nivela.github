@@ -5,13 +5,17 @@ from django.test import Client, TestCase, override_settings
 SENHA_CERTA = "SenhaCorreta#2026"
 
 # O teste roda com DEBUG=False; estas opções evitam depender do collectstatic
-# e do redirecionamento para HTTPS, que só valem em produção.
+# e do redirecionamento para HTTPS
 @override_settings(
     SECURE_SSL_REDIRECT=False,
     STORAGES={
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
     },
+    AXES_FAILURE_LIMIT=5,
+    AXES_COOLOFF_TIME=1,
+    AXES_LOCKOUT_PARAMETERS=["username"],
+    AXES_RESET_ON_SUCCESS=True,
 )
 class AxesPrivacidadeTests(TestCase):
     """Garante que o django-axes não guarda senha e bloqueia por conta."""
@@ -37,19 +41,33 @@ class AxesPrivacidadeTests(TestCase):
         self.assertEqual(tentativa.username, "a@example.com")
 
     def test_bloqueio_vale_por_conta_mesmo_trocando_de_ip(self):
-        for _ in range(5):
-            self._login("a@example.com", "errada", ip="10.0.0.1")
+        # As 4 primeiras falhas só reexibem o formulário (200); a 5ª já bloqueia.
+        # Se vier 400, o teste não está chegando ao login (campo do wizard errado).
+        for _ in range(4):
+            resposta = self._login("a@example.com", "errada", ip="10.0.0.1")
+            self.assertEqual(resposta.status_code, 200)
+        self._login("a@example.com", "errada", ip="10.0.0.1")
         resposta = self._login("a@example.com", SENHA_CERTA, ip="10.0.0.2")
         self.assertEqual(resposta.status_code, 429)
 
     def test_login_bem_sucedido_registra_o_email_no_accesslog(self):
-        self._login("b@example.com", SENHA_CERTA)
+        resposta = self._login("b@example.com", SENHA_CERTA)
+        self.assertEqual(resposta.status_code, 302)
         self.assertEqual(AccessLog.objects.get().username, "b@example.com")
-        
+
     def test_login_ignora_maiusculas_no_email(self):
-        self._login("A@Example.com", SENHA_CERTA)
-        self.assertFalse(AccessAttempt.objects.exists())
+        resposta = self._login("A@Example.com", SENHA_CERTA)
+        self.assertEqual(resposta.status_code, 302)
         self.assertEqual(AccessLog.objects.count(), 1)
+        self.assertFalse(AccessAttempt.objects.exists())
+
+    def test_falhas_de_outra_conta_no_mesmo_ip_nao_bloqueiam(self):
+        for _ in range(5):
+            self._login("a@example.com", "errada", ip="10.0.0.1")
+        resposta = self._login("b@example.com", SENHA_CERTA, ip="10.0.0.1")
+        self.assertEqual(resposta.status_code, 302)
+        self.assertTrue(AccessLog.objects.filter(username="b@example.com").exists())
+
 
 @override_settings(
     SECURE_SSL_REDIRECT=False,
