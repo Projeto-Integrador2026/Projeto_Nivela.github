@@ -69,32 +69,32 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [x] 6.6 Identificação dos ativos do sistema
 - [x] 6.7 Identificação de ameaças e vulnerabilidades
 - [x] 6.8 Associação risco × contramedida
-- [ ] 6.9 Testes de segurança realizados
-- [ ] 6.10 Resultados dos testes documentados
+- [x] 6.9 Testes de segurança realizados
+- [x] 6.10 Resultados dos testes documentados
 - [x] 6.11 Uso de artigos científicos e/ou normas técnicas
 - [x] 6.12 Referências normalizadas
 
 ## 7. Resumo Científico
 
 - [x] 7.1 Resumo entre 200 e 300 palavras
-- [ ] 7.2 Objetivo claramente definido
-- [ ] 7.3 Metodologia técnica descrita
+- [x] 7.2 Objetivo claramente definido
+- [x] 7.3 Metodologia técnica descrita
 - [x] 7.4 Mecanismos de segurança apresentados
 - [x] 7.5 Conformidade com a LGPD explicitada
-- [ ] 7.6 Terminologia técnica adequada
-- [ ] 7.7 Qualidade textual e científica
+- [x] 7.6 Terminologia técnica adequada
+- [x] 7.7 Qualidade textual e científica
 
 ## 8. Pôster Científico e Apresentação
 
-- [ ] 8.1 Estrutura científica do pôster
-- [ ] 8.2 Arquitetura e fluxos representados visualmente
-- [ ] 8.3 Evidência de conformidade com LGPD
-- [ ] 8.4 Qualidade técnica dos diagramas
-- [ ] 8.5 Coerência com o sistema entregue
-- [ ] 8.6 Domínio técnico na apresentação
-- [ ] 8.7 Capacidade de resposta às perguntas
+- [x] 8.1 Estrutura científica do pôster
+- [x] 8.2 Arquitetura e fluxos representados visualmente
+- [x] 8.3 Evidência de conformidade com LGPD
+- [x] 8.4 Qualidade técnica dos diagramas
+- [x] 8.5 Coerência com o sistema entregue
+- [x] 8.6 Domínio técnico na apresentação
+- [x] 8.7 Capacidade de resposta às perguntas
 
 ---
 
-> Última atualização: _(24/09/2026)_
+> Última atualização: _(18/10/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_
