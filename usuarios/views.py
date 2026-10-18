@@ -73,24 +73,20 @@ class RedefinirSenhaView(PasswordResetConfirmView):
 
 # Cadastro de novos usuarios
 
-
-def _enviar_email_seguro(destino, assunto, mensagem):
-    """Envia e-mail sem nunca derrubar a view (SMTP fora do ar nao pode dar erro 500)."""
-    try:
-        send_mail(assunto, mensagem, None, [destino])
-    except Exception:
-        logger.exception('Falha ao enviar e-mail para %s', mascarar_email(destino))
-
-
-MSG_CADASTRO = 'Conta criada! Verifique o seu e-mail para ativar o acesso.'
+MSG_CADASTRO = ('Cadastro recebido! Faça login para configurar o seu autenticador (2FA). '
+                'Se este e-mail já tinha conta, entre com a senha original.')
 
 
 class CadastroView(CreateView):
     """
     Tela de cadastro (link 'Cadastre-se' da tela de login).
 
-    - A conta nasce inativa e so e ativada pelo link enviado por e-mail (A-06).
-    - Se o e-mail ja existe, a tela responde igual a um cadastro novo (A-04).
+    DECISAO DO GRUPO: a conta nasce ATIVA e o e-mail NAO e verificado, porque o
+    plano gratuito do Render bloqueia o SMTP (portas 25/465/587) e o e-mail de
+    ativacao nunca chegava. Risco aceito: qualquer pessoa pode cadastrar o
+    e-mail de outra.
+
+    Se o e-mail ja existe, a tela responde igual a um cadastro novo (A-04).
     """
     form_class = CadastroForm
     template_name = 'usuarios/cadastro.html'
@@ -117,22 +113,13 @@ class CadastroView(CreateView):
         if form.errors:
             return self.form_invalid(form)
 
-        _enviar_email_seguro(
-            existente.email,
-            'Tentativa de novo registo no Nivela',
-            'Alguém tentou criar uma conta com este e-mail no Nivela, mas a sua conta já existe.\n\n'
-            'Se foi você, basta fazer o login normal ou utilizar a opção "Recuperar Senha".\n'
-            'Se não foi você, pode ignorar este e-mail; a sua conta continua segura.',
-        )
         messages.success(request, MSG_CADASTRO)
         return redirect(self.success_url)
 
     def form_valid(self, form):
-        # 1. Conta inativa ate clicar no link do e-mail (A-06)
-        form.instance.is_active = False
-        resposta = super().form_valid(form)
+        resposta = super().form_valid(form)  # is_active=True (padrao do Django)
 
-        # 2. Consentimento aos Termos de Uso
+        # Consentimento aos Termos de Uso
         RegistroConsentimento.objects.create(
             usuario=self.object,
             finalidade=RegistroConsentimento.Finalidade.TERMOS_USO,
@@ -141,42 +128,5 @@ class CadastroView(CreateView):
             data_concessao=timezone.now(),
         )
 
-        # 3. Link de ativacao. build_absolute_uri usa o esquema real da requisicao
-        #    (http no localhost, https no Render) em vez de fixar "https://".
-        uid = urlsafe_base64_encode(force_bytes(self.object.pk))
-        token = default_token_generator.make_token(self.object)
-        caminho = reverse('ativar_conta', kwargs={'uidb64': uid, 'token': token})
-        link_ativacao = self.request.build_absolute_uri(caminho)
-
-        _enviar_email_seguro(
-            self.object.email,
-            'Ativação da sua conta no Nivela',
-            f'Bem-vindo ao Nivela!\n\nPara ativar a sua conta e configurar o 2FA, '
-            f'clique no link abaixo:\n\n{link_ativacao}\n\n'
-            f'Se não solicitou este registo, ignore este e-mail.',
-        )
-
         messages.success(self.request, MSG_CADASTRO)
         return resposta
-
-
-class AtivarContaView(View):
-    """
-    Processa o clique no link de ativação enviado por e-mail.
-    """
-    def get(self, request, uidb64, token):
-        Usuario = get_user_model()
-        try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            usuario = Usuario.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, Usuario.DoesNotExist):
-            usuario = None
-
-        if usuario is not None and default_token_generator.check_token(usuario, token):
-            usuario.is_active = True
-            usuario.save()
-            messages.success(request, 'A sua conta foi ativada com sucesso! Inicie sessão para configurar o seu autenticador.')
-        else:
-            messages.error(request, 'O link de ativação é inválido ou já expirou.')
-            
-        return redirect('two_factor:login')
