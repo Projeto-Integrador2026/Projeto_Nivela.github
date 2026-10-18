@@ -294,6 +294,10 @@ LOGGING = {
             'formatter': 'com_data',
             'encoding': 'utf-8',
         },
+        'repassa_falha_email': {
+            'level': 'ERROR',
+            'class': 'nivela.logging_utils.RepassaFalhaEnvioEmail',
+        },
     },
     'loggers': {
         'usuarios.recuperacao_senha': {
@@ -304,6 +308,11 @@ LOGGING = {
         'usuarios.autenticacao': {
             'handlers': ['file_autenticacao'],
             'level': 'INFO',
+            'propagate': True,
+        },
+        'django.contrib.auth': {
+            'handlers': ['repassa_falha_email'],
+            'level': 'ERROR',
             'propagate': True,
         },
     },

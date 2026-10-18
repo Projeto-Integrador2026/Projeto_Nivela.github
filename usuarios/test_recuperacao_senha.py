@@ -64,6 +64,19 @@ class RecuperacaoSenhaTests(TestCase):
         self.assertTrue(envio.called)
         self.assertRedirects(resposta, "/recuperar-senha/enviado/", fetch_redirect_response=False)
 
+    def test_falha_no_envio_do_email_e_registrada_no_log_de_auditoria(self):
+        with mock.patch(
+            "django.core.mail.backends.locmem.EmailBackend.send_messages",
+            side_effect=OSError("smtp bloqueado"),
+        ):
+            with self.assertLogs(LOGGER, level="ERROR") as captura:
+                Client().post("/recuperar-senha/", {"email": "maria@example.com"})
+        self.assertEqual(len(captura.output), 1)  # uma linha so, sem traceback
+        texto = captura.output[0]
+        self.assertIn("FALHA no envio do e-mail de recuperacao (OSError)", texto)
+        self.assertNotIn("maria", texto)
+        self.assertNotIn("Traceback", texto)
+
     # --- 2.6 ------------------------------------------------------------
 
     def test_solicitacao_e_registrada_com_email_mascarado_e_ip(self):
