@@ -127,9 +127,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Modelo customizado de usuário (suporte a login por e-mail, RF02)
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
-# Algoritmo e parâmetro de custo para hash de senhas (PBKDF2 com 1.000.000 de iterações - OWASP 2025+)
-AUTH_PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+# Algoritmo e parâmetro de custo para hash de senhas: PBKDF2-SHA256 com 1.000.000 de
+# iterações, fixado em código em usuarios/hashers.py (não depende do padrão do Django).
+PASSWORD_HASHERS = [
+    'usuarios.hashers.PBKDF2Nivela', 
 ]
 
 # Validadores de complexidade de senha
@@ -172,6 +173,13 @@ TWO_FACTOR_PATCH_ADMIN = True
 AXES_FAILURE_LIMIT = 5  # Bloqueia após 5 tentativas incorretas
 AXES_COOLOFF_TIME = 1   # Duração do bloqueio: 1 hora
 AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']
+
+# Atraso exponencial nos erros do codigo 2FA (django-otp), item 1.11.
+# Apos n erros seguidos, o dispositivo recusa novas tentativas por
+# fator * 2**(n-1) segundos. O django-axes nao enxerga essas falhas,
+# entao esta e a protecao contra forca bruta do passo do codigo.
+OTP_TOTP_THROTTLE_FACTOR = 1    # app autenticador (TOTP)
+OTP_STATIC_THROTTLE_FACTOR = 1  # codigos de backup
 
 # Mapeamento do campo de e-mail enviado pelo formulário 2FA (auth-username)
 AXES_USERNAME_CALLABLE = 'usuarios.axes_utils.obter_username_login'
