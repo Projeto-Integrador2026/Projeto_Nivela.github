@@ -42,6 +42,8 @@ jobs:
             -e AXES_ENABLED=False \
             -e SECRET_KEY="${{ env.SECRET_KEY }}" \
             -e FIELD_ENCRYPTION_KEY="${{ env.FIELD_ENCRYPTION_KEY }}" \
+            -e DB_PASSWORD=postgres \
+            -e DB_HOST=localhost \
             nivela-app:test
 
       - name: Aguardar a aplicação responder
