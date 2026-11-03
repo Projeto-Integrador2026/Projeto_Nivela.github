@@ -1,0 +1,20 @@
+# Regras do OWASP ZAP (formato: ID<TAB>ACAO<TAB>(descricao))
+# ACAO: IGNORE | INFO | WARN | FAIL.  Regras fora do arquivo ficam em WARN (nao quebram o build).
+# FAIL = vulnerabilidade explotavel -> o pipeline falha.
+40012	FAIL	(Cross Site Scripting - Reflected)
+40014	FAIL	(Cross Site Scripting - Persistent)
+40026	FAIL	(Cross Site Scripting - DOM Based)
+40018	FAIL	(SQL Injection)
+40019	FAIL	(SQL Injection - MySQL)
+40020	FAIL	(SQL Injection - Hypersonic SQL)
+40021	FAIL	(SQL Injection - Oracle)
+40022	FAIL	(SQL Injection - PostgreSQL)
+40024	FAIL	(SQL Injection - SQLite)
+90019	FAIL	(Server Side Code Injection)
+90020	FAIL	(Remote OS Command Injection)
+6	FAIL	(Path Traversal)
+7	FAIL	(Remote File Inclusion)
+40003	FAIL	(CRLF Injection)
+# HSTS: no CI o app roda em HTTP puro (sem TLS), entao o cabecalho nao e emitido.
+# Em producao ele e verificado (ver docs/Evidencias/criptografia-comunicacao-segura).
+10035	IGNORE	(Strict-Transport-Security Header Not Set - esperado em HTTP no CI)
