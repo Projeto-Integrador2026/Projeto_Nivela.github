@@ -15,6 +15,21 @@ jobs:
     name: DAST - OWASP ZAP
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: nivela_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
@@ -35,19 +50,19 @@ jobs:
         run: |
           docker run -d \
             --name nivela-web \
-            -p 8000:8000 \
+            --network host \
             -e DEBUG=False \
             -e ALLOWED_HOSTS=localhost,127.0.0.1 \
             -e SECURE_SSL_REDIRECT=False \
             -e AXES_ENABLED=False \
             -e SECRET_KEY="${{ env.SECRET_KEY }}" \
             -e FIELD_ENCRYPTION_KEY="${{ env.FIELD_ENCRYPTION_KEY }}" \
-            -e DB_ENGINE=django.db.backends.sqlite3 \
-            -e DB_NAME=db.sqlite3 \
+            -e DB_ENGINE=django.db.backends.postgresql \
+            -e DB_NAME=nivela_db \
             -e DB_USER=postgres \
-            -e DB_PASSWORD=postgres \
-            -e DB_HOST=localhost \
-            -e DB_PORT=5432 \
+            -e DB_PASSWORD=postgrespassword \
+            -e DB_HOST=127.0.0.1 \
+            -e DB_PORT=5433 \
             nivela-app:test
 
       - name: Aguardar a aplicação responder
