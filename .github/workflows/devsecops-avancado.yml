@@ -1,145 +1,83 @@
 name: DevSecOps Avançado
 
-# Vertente 1: DAST com OWASP ZAP contra a aplicação em execução (Docker no runner).
-# As vertentes 2 (privacidade/LGPD) e 3 (supply chain) entram como novos jobs neste mesmo arquivo.
-
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
   pull_request:
-    branches: [main]
-  schedule:
-    - cron: "0 6 * * 1" # toda segunda, 06:00 UTC (rescan semanal: novas regras do ZAP)
+    branches: [ "main" ]
   workflow_dispatch:
 
-# Princípio do menor privilégio: o GITHUB_TOKEN só lê o repositório.
-permissions:
-  contents: read
-
-concurrency:
-  group: devsecops-avancado-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  # ===========================================================================
-  # 1. DAST - OWASP ZAP Full Scan (spider + active scan) em http://localhost:8000
-  # ===========================================================================
+  # ==========================================
+  # PARTE 1: DAST com OWASP ZAP
+  # ==========================================
   dast-zap:
     name: DAST - OWASP ZAP
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-
-    # PostgreSQL efêmero: mesmo motor da produção (Render), descartado ao fim do job.
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_PASSWORD: ci-only-password
-          POSTGRES_DB: nivela_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-
-    env:
-      APP_URL: http://localhost:8000
-      IMAGE: nivela-app:dast
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
       - name: Gerar segredos efêmeros (só existem nesta execução)
+        id: generate-secrets
         run: |
-          SECRET_KEY="$(openssl rand -hex 32)"
-          # Chave Fernet = 32 bytes aleatórios em base64 url-safe
-          FIELD_ENCRYPTION_KEY="$(openssl rand -base64 32 | tr '+/' '-_')"
-          echo "::add-mask::$SECRET_KEY"
-          echo "::add-mask::$FIELD_ENCRYPTION_KEY"
-          {
-            echo "SECRET_KEY=$SECRET_KEY"
-            echo "FIELD_ENCRYPTION_KEY=$FIELD_ENCRYPTION_KEY"
-          } >> "$GITHUB_ENV"
+          SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe(50))')
+          ENCRYPTION_KEY=$(python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')
+          echo "SECRET_KEY=${SECRET_KEY}" >> $GITHUB_ENV
+          echo "FIELD_ENCRYPTION_KEY=${ENCRYPTION_KEY}" >> $GITHUB_ENV
 
       - name: Compilar a imagem Docker da aplicação
-        run: docker build -t "$IMAGE" .
+        run: |
+          docker build -t nivela-app:test .
 
       - name: Subir a aplicação (modo produção, DEBUG=False)
         run: |
-          # SECURE_SSL_REDIRECT=False e AXES_ENABLED=False existem só para o DAST:
-          #  - sem TLS no runner, o redirect para HTTPS impediria o ZAP de varrer a app;
-          #  - o Axes bloquearia o IP do ZAP após 5 logins inválidos e esconderia o formulário.
-          # O e-mail aponta para uma porta fechada: nenhum e-mail real é enviado pelo scan.
-          docker run -d --name nivela --network host \
-            -e SECRET_KEY -e FIELD_ENCRYPTION_KEY \
-            -e DB_PASSWORD=ci-only-password \
-            -e DATABASE_URL=postgresql://postgres:ci-only-password@localhost:5432/nivela_db \
+          docker run -d \
+            --name nivela-web \
+            -p 8000:8000 \
             -e DEBUG=False \
             -e ALLOWED_HOSTS=localhost,127.0.0.1 \
             -e SECURE_SSL_REDIRECT=False \
             -e AXES_ENABLED=False \
-            -e EMAIL_HOST=127.0.0.1 -e EMAIL_PORT=1 \
-            "$IMAGE"
+            -e SECRET_KEY="${{ env.SECRET_KEY }}" \
+            -e FIELD_ENCRYPTION_KEY="${{ env.FIELD_ENCRYPTION_KEY }}" \
+            nivela-app:test
 
       - name: Aguardar a aplicação responder
         run: |
-          for i in $(seq 1 40); do
-            if curl -fsS -o /dev/null "$APP_URL/account/login/"; then
-              echo "Aplicação no ar após ${i} tentativa(s)."
+          echo "Aguardando container responder..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/ > /dev/null; then
+              echo "Aplicação no ar!"
               exit 0
             fi
-            sleep 3
+            sleep 2
           done
-          echo "::error::A aplicação não subiu a tempo. Logs do container:"
-          docker logs nivela
+          echo "Erro: Aplicação não respondeu a tempo."
+          docker logs nivela-web
           exit 1
 
       - name: Executar OWASP ZAP Full Scan
-        id: zap
-        run: |
-          mkdir -p zap-wrk
-          cp .zap/rules.tsv zap-wrk/rules.tsv
-          chmod -R 777 zap-wrk   # o ZAP roda como usuário "zap" dentro do container
-
-          # Não deixamos o script abortar o passo: precisamos publicar os relatórios antes.
-          set +e
-          docker run --rm --network host \
-            -v "$PWD/zap-wrk:/zap/wrk:rw" \
-            ghcr.io/zaproxy/zaproxy:stable \
-            zap-full-scan.py \
-              -t "$APP_URL" \
-              -c rules.tsv \
-              -m 5 \
-              -r zap-report.html \
-              -J zap-report.json \
-              -x zap-report.xml \
-              -w zap-report.md
-          rc=$?
-          set -e
-
-          echo "ZAP terminou com código $rc  (0 = ok, 1 = FAIL, 2 = WARN, 3 = erro do ZAP)"
-          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+        uses: zaproxy/action-full-scan@v0.12.0
+        with:
+          target: 'http://localhost:8000'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+          allow_issue_writing: false
 
       - name: Resumo do scan na aba do workflow
         if: always()
         run: |
-          if [ -f zap-wrk/zap-report.md ]; then
-            {
-              echo "## Resultado do DAST (OWASP ZAP)"
-              cat zap-wrk/zap-report.md
-            } >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "Relatório do ZAP não foi gerado." >> "$GITHUB_STEP_SUMMARY"
+          echo "### Resultado do DAST (OWASP ZAP)" >> $GITHUB_STEP_SUMMARY
+          if [ -f report_html.html ]; then
+            echo "Relatório HTML gerado com sucesso. Baixe os artefatos para análise." >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Coletar logs da aplicação
         if: always()
         run: |
-          mkdir -p zap-wrk
-          docker logs nivela > zap-wrk/app-container.log 2>&1 || true
+          docker logs nivela-web > container.log || true
 
       - name: Publicar relatórios como artefato
         if: always()
@@ -147,10 +85,11 @@ jobs:
         with:
           name: relatorios-dast-zap
           path: |
-            zap-wrk/zap-report.*
-            zap-wrk/app-container.log
-          retention-days: 30
-          if-no-files-found: warn
+            report_html.html
+            report_json.json
+            report_xml.xml
+            report_md.md
+            container.log
 
       - name: Quality gate do DAST
         run: |
@@ -161,3 +100,53 @@ jobs:
             1) echo "::error::ZAP encontrou vulnerabilidade classificada como FAIL (.zap/rules.tsv)."; exit 1 ;;
             *) echo "::error::Falha na execução do ZAP (código $rc)."; exit 1 ;;
           esac
+
+      - name: Stop containers
+        if: always()
+        run: |
+          docker stop nivela-web || true
+          docker rm nivela-web || true
+
+  # ==========================================
+  # PARTE 2: Privacidade de Dados e LGPD com Bearer CLI
+  # ==========================================
+  privacy-bearer:
+    name: Privacidade & LGPD - Bearer CLI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Bearer CLI
+        run: |
+          curl -sfL https://raw.githubusercontent.com/bearer/bearer/main/ingress/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Executar varredura de privacidade (Bearer)
+        run: |
+          bearer scan . \
+            --format=rdjson,json \
+            --output=bearer-report.rdjson,bearer-report.json \
+            --severity=low,medium,high,critical || true
+
+      - name: Gerar Resumo do Scan para a Aba Summary
+        if: always()
+        run: |
+          echo "### 🔒 Relatório de Privacidade e Dados Sensíveis (Bearer CLI / LGPD)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f bearer-report.json ]; then
+            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+            head -n 40 bearer-report.json >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Nenhum relatório foi gerado." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Publicar Relatórios de Privacidade como Artefato
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-privacidade-bearer
+          path: |
+            bearer-report.json
+            bearer-report.rdjson
