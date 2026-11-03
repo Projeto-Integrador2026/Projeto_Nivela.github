@@ -1,0 +1,163 @@
+name: DevSecOps Avançado
+
+# Vertente 1: DAST com OWASP ZAP contra a aplicação em execução (Docker no runner).
+# As vertentes 2 (privacidade/LGPD) e 3 (supply chain) entram como novos jobs neste mesmo arquivo.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1" # toda segunda, 06:00 UTC (rescan semanal: novas regras do ZAP)
+  workflow_dispatch:
+
+# Princípio do menor privilégio: o GITHUB_TOKEN só lê o repositório.
+permissions:
+  contents: read
+
+concurrency:
+  group: devsecops-avancado-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ===========================================================================
+  # 1. DAST - OWASP ZAP Full Scan (spider + active scan) em http://localhost:8000
+  # ===========================================================================
+  dast-zap:
+    name: DAST - OWASP ZAP
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    # PostgreSQL efêmero: mesmo motor da produção (Render), descartado ao fim do job.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: nivela_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      APP_URL: http://localhost:8000
+      IMAGE: nivela-app:dast
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Gerar segredos efêmeros (só existem nesta execução)
+        run: |
+          SECRET_KEY="$(openssl rand -hex 32)"
+          # Chave Fernet = 32 bytes aleatórios em base64 url-safe
+          FIELD_ENCRYPTION_KEY="$(openssl rand -base64 32 | tr '+/' '-_')"
+          echo "::add-mask::$SECRET_KEY"
+          echo "::add-mask::$FIELD_ENCRYPTION_KEY"
+          {
+            echo "SECRET_KEY=$SECRET_KEY"
+            echo "FIELD_ENCRYPTION_KEY=$FIELD_ENCRYPTION_KEY"
+          } >> "$GITHUB_ENV"
+
+      - name: Compilar a imagem Docker da aplicação
+        run: docker build -t "$IMAGE" .
+
+      - name: Subir a aplicação (modo produção, DEBUG=False)
+        run: |
+          # SECURE_SSL_REDIRECT=False e AXES_ENABLED=False existem só para o DAST:
+          #  - sem TLS no runner, o redirect para HTTPS impediria o ZAP de varrer a app;
+          #  - o Axes bloquearia o IP do ZAP após 5 logins inválidos e esconderia o formulário.
+          # O e-mail aponta para uma porta fechada: nenhum e-mail real é enviado pelo scan.
+          docker run -d --name nivela --network host \
+            -e SECRET_KEY -e FIELD_ENCRYPTION_KEY \
+            -e DB_PASSWORD=ci-only-password \
+            -e DATABASE_URL=postgresql://postgres:ci-only-password@localhost:5432/nivela_db \
+            -e DEBUG=False \
+            -e ALLOWED_HOSTS=localhost,127.0.0.1 \
+            -e SECURE_SSL_REDIRECT=False \
+            -e AXES_ENABLED=False \
+            -e EMAIL_HOST=127.0.0.1 -e EMAIL_PORT=1 \
+            "$IMAGE"
+
+      - name: Aguardar a aplicação responder
+        run: |
+          for i in $(seq 1 40); do
+            if curl -fsS -o /dev/null "$APP_URL/account/login/"; then
+              echo "Aplicação no ar após ${i} tentativa(s)."
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::A aplicação não subiu a tempo. Logs do container:"
+          docker logs nivela
+          exit 1
+
+      - name: Executar OWASP ZAP Full Scan
+        id: zap
+        run: |
+          mkdir -p zap-wrk
+          cp .zap/rules.tsv zap-wrk/rules.tsv
+          chmod -R 777 zap-wrk   # o ZAP roda como usuário "zap" dentro do container
+
+          # Não deixamos o script abortar o passo: precisamos publicar os relatórios antes.
+          set +e
+          docker run --rm --network host \
+            -v "$PWD/zap-wrk:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-full-scan.py \
+              -t "$APP_URL" \
+              -c rules.tsv \
+              -m 5 \
+              -r zap-report.html \
+              -J zap-report.json \
+              -x zap-report.xml \
+              -w zap-report.md
+          rc=$?
+          set -e
+
+          echo "ZAP terminou com código $rc  (0 = ok, 1 = FAIL, 2 = WARN, 3 = erro do ZAP)"
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+
+      - name: Resumo do scan na aba do workflow
+        if: always()
+        run: |
+          if [ -f zap-wrk/zap-report.md ]; then
+            {
+              echo "## Resultado do DAST (OWASP ZAP)"
+              cat zap-wrk/zap-report.md
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Relatório do ZAP não foi gerado." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Coletar logs da aplicação
+        if: always()
+        run: |
+          mkdir -p zap-wrk
+          docker logs nivela > zap-wrk/app-container.log 2>&1 || true
+
+      - name: Publicar relatórios como artefato
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorios-dast-zap
+          path: |
+            zap-wrk/zap-report.*
+            zap-wrk/app-container.log
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Quality gate do DAST
+        run: |
+          rc="${{ steps.zap.outputs.exit_code }}"
+          case "$rc" in
+            0) echo "DAST limpo." ;;
+            2) echo "::warning::ZAP encontrou alertas de severidade WARN. Veja o relatório no artefato." ;;
+            1) echo "::error::ZAP encontrou vulnerabilidade classificada como FAIL (.zap/rules.tsv)."; exit 1 ;;
+            *) echo "::error::Falha na execução do ZAP (código $rc)."; exit 1 ;;
+          esac

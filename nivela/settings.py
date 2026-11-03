@@ -196,13 +196,13 @@ AXES_IPWARE_META_PRECEDENCE_ORDER = [
 AXES_LOWER_CASE_USERNAME = True   # Beatriz@x.com e beatriz@x.com contam como a mesma conta
 AXES_RESET_ON_SUCCESS = True      # login completo zera as falhas anteriores
 AXES_LOCKOUT_TEMPLATE = 'bloqueado.html'
-
+AXES_ENABLED = config('AXES_ENABLED', default=True, cast=bool)
 # ==============================================================================
 # 7. COMUNICAÇÃO E SEGURANÇA HTTP/HTTPS (SECURITY HEADERS)
 # ==============================================================================
 
 # Configurações ativas apenas quando DEBUG=False (Produção)
-SECURE_SSL_REDIRECT = not DEBUG
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=not DEBUG, cast=bool)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
