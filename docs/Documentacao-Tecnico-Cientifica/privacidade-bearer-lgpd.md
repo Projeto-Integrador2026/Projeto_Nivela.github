@@ -42,6 +42,16 @@ Não há achados críticos, portanto o quality gate foi aprovado. Os achados de 
 
 **Sobre o IP nos logs:** o endereço IP é registrado nos eventos de login, logout e validação de 2FA. Ele é dado pessoal, mas não é dado sensível. A finalidade é detectar tentativas de acesso indevido, com base legal de **legítimo interesse** (art. 7º, IX da LGPD), respeitando os princípios de finalidade, necessidade e segurança (art. 6º) e as medidas de segurança do art. 46. Como mitigação, o e-mail é sempre mascarado e a pasta de logs tem acesso restrito ao dono (`0o700`). O tratamento consta no inventário de dados (`lgpd-inventario-dados.md`) e a estrutura dos logs está descrita em `auditoria-logs.md`.
 
+## 4.1 Prova do bloqueio do quality gate
+
+Para demonstrar que o quality gate realmente bloqueia o build, foi aberto um Pull Request de teste (PR #66, branch `teste/bloqueio-gate`) em que o limite do Bearer foi reduzido de `critical` para `high` (`--fail-on-severity high`). Como o scan encontra 2 achados de severidade alta, o job **Privacidade & LGPD - Bearer CLI** falhou com `Error: Process completed with exit code 1`, enquanto os jobs de DAST e de Supply Chain seguiram aprovados. O PR foi fechado sem merge e a configuração da `main` permaneceu em `critical`.
+
+![Job do Bearer reprovado no PR de teste](../Evidencias/devsecops/bearer-lgpd/03-bloqueio-gate-resumo.jpg)
+*Figura 2: Execução do PR de teste, com o job do Bearer reprovado (vermelho) e os demais aprovados.*
+
+![Log do passo que falhou](../Evidencias/devsecops/bearer-lgpd/02-bloqueio-gate-log.jpg)
+*Figura 3: Log do passo "Varredura de segurança e vazamento de dados no codigo", encerrado com exit code 1.*
+
 ## 5. Limitações
 - O quality gate bloqueia somente achados **críticos**. Achados de severidade alta exigem revisão manual, como feito na seção 4.
 - O Bearer faz análise estática e não reconhece funções próprias de mascaramento, o que explica os 4 achados médios.
