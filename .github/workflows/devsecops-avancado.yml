@@ -116,13 +116,54 @@ jobs:
       - name: Quality gate do DAST
         if: always()
         run: |
-          rc="${{ steps.zap.outputs.exit_code }}"
-          case "$rc" in
-            0) echo "DAST limpo." ;;
-            2) echo "::warning::ZAP encontrou alertas de severidade WARN. Veja o relatório no artefato." ;;
-            1) echo "::error::ZAP encontrou vulnerabilidade classificada como FAIL (.zap/rules.tsv)."; exit 1 ;;
-            *) echo "::notice::Execução do ZAP finalizada com avisos.";;
-          esac
+          python3 - <<'PY'
+          import json, os, sys
+
+          # 1) Le do .zap/rules.tsv os IDs marcados como FAIL
+          fail_ids = set()
+          with open(".zap/rules.tsv", encoding="utf-8") as f:
+              for linha in f:
+                  linha = linha.strip()
+                  if not linha or linha.startswith("#"):
+                      continue
+                  partes = linha.split("\t")
+                  if len(partes) >= 2 and partes[1].strip().upper() == "FAIL":
+                      fail_ids.add(partes[0].strip())
+
+          # 2) Sem relatorio = o scan nao rodou, entao o gate falha
+          if not os.path.exists("report_json.json"):
+              print("::error::report_json.json nao encontrado: o ZAP nao gerou relatorio.")
+              sys.exit(1)
+
+          with open("report_json.json", encoding="utf-8-sig") as f:
+              relatorio = json.load(f)
+
+          # 3) Separa alertas bloqueantes (FAIL) dos demais (apenas aviso)
+          bloqueantes, avisos = [], []
+          for site in relatorio.get("site", []):
+              for alerta in site.get("alerts", []):
+                  item = f"{alerta.get('alert')} (ID {alerta.get('pluginid')})"
+                  if str(alerta.get("pluginid")) in fail_ids:
+                      bloqueantes.append(item)
+                  else:
+                      avisos.append(item)
+
+          # 4) Resumo na aba Summary do workflow
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as s:
+              s.write("### Quality gate do DAST\n\n")
+              s.write(f"- Alertas bloqueantes (FAIL): **{len(bloqueantes)}**\n")
+              s.write(f"- Alertas de aviso (WARN/INFO): **{len(avisos)}**\n")
+              for b in bloqueantes:
+                  s.write(f"  - BLOQUEANTE: {b}\n")
+
+          if avisos:
+              print(f"::warning::ZAP encontrou {len(avisos)} alerta(s) de aviso. Veja o relatorio no artefato.")
+          if bloqueantes:
+              for b in bloqueantes:
+                  print(f"::error::Vulnerabilidade bloqueante: {b}")
+              sys.exit(1)
+          print("Quality gate aprovado: nenhum alerta FAIL.")
+          PY
 
       - name: Stop containers
         if: always()
