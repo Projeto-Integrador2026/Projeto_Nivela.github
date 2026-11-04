@@ -247,7 +247,7 @@ jobs:
                       saida.append(
                           f"| {n} | {a.get('title')} (`{a.get('id')}`) "
                           f"| `{a.get('filename')}:{a.get('line_number')}` | {cwe} |"
-                      )upgrade
+                      )
 
           # 2) Dados pessoais detectados (mapeamento LGPD)
           saida += ["", "#### Dados pessoais detectados (mapeamento LGPD)"]
