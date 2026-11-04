@@ -247,7 +247,7 @@ jobs:
                       saida.append(
                           f"| {n} | {a.get('title')} (`{a.get('id')}`) "
                           f"| `{a.get('filename')}:{a.get('line_number')}` | {cwe} |"
-                      )
+                      )upgrade
 
           # 2) Dados pessoais detectados (mapeamento LGPD)
           saida += ["", "#### Dados pessoais detectados (mapeamento LGPD)"]
@@ -311,7 +311,7 @@ jobs:
           path: trivy-report.txt
 
       - name: Gerar SBOM CycloneDX (Trivy)
-        uses: aquasecurity/trivy-action@0.36.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
