@@ -193,14 +193,17 @@ jobs:
 
       - name: Varredura de seguranca e vazamento de dados no codigo
         run: |
-          # O scanner devolve codigo 1 quando encontra problemas; isso nao deve quebrar o job.
-          bearer scan . --format=json --output=bearer-report.json --quiet || true
+          # Quality gate: falha o build se o código tiver vulnerabilidade crítica
+          bearer scan . --report security --format json --output bearer-report.json --quiet --fail-on-severity critical
 
       - name: Varredura de privacidade (mapeamento de dados pessoais)
+        if: always()
         run: |
+          # Evidência LGPD: não bloqueia o build (o gate está no passo de segurança acima)
           bearer scan . --report privacy --format=json --output=bearer-privacy.json --quiet || true
 
       - name: Verificar se os relatorios foram gerados
+        if: always()
         run: |
           for arq in bearer-report.json bearer-privacy.json; do
             if [ ! -s "$arq" ]; then
@@ -277,7 +280,6 @@ jobs:
           path: |
             bearer-report.json
             bearer-privacy.json
-
   # ==========================================
   # PARTE 3: Supply Chain Security & SBOM (Trivy / Pip-Audit)
   # ==========================================
@@ -295,7 +297,7 @@ jobs:
           pip-audit --desc || true
 
       - name: Varredura de Imagem Docker e Geração de SBOM (Trivy)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
           format: 'table'
@@ -307,3 +309,18 @@ jobs:
         with:
           name: relatorio-supply-chain
           path: trivy-report.txt
+
+      - name: Gerar SBOM CycloneDX (Trivy)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'cyclonedx'
+          output: 'sbom-cyclonedx.json'
+
+      - name: Publicar SBOM como artefato
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: sbom-cyclonedx.json
