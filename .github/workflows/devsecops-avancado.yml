@@ -39,6 +39,9 @@ jobs:
         run: |
           SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe(50))')
           ENCRYPTION_KEY=$(python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')
+          # Mascara as chaves nos logs (o GitHub passa a exibir *** no lugar do valor)
+          echo "::add-mask::${SECRET_KEY}"
+          echo "::add-mask::${ENCRYPTION_KEY}"
           echo "SECRET_KEY=${SECRET_KEY}" >> $GITHUB_ENV
           echo "FIELD_ENCRYPTION_KEY=${ENCRYPTION_KEY}" >> $GITHUB_ENV
 
@@ -188,31 +191,88 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
           bearer version
 
-      - name: Executar varredura de privacidade (Bearer)
+      - name: Varredura de seguranca e vazamento de dados no codigo
         run: |
-          # Relatório de privacidade, serve para evidenciar e não bloqueia a build
-          bearer scan . --report privacy --format json --output bearer-privacy.json --exit-code 0
-          # Relatório de segurança: falha o build se o código tiver vulnerabilidade crítica
-          bearer scan . --report security --format json --output bearer-report.json --fail-on-severity critical
+          # Quality gate: falha o build se o código tiver vulnerabilidade crítica
+          bearer scan . --report security --format json --output bearer-report.json --quiet --fail-on-severity critical
 
-      - name: Verificar se o relatorio do Bearer foi gerado
-        run: |
-          if [ ! -s bearer-report.json ]; then
-            echo "::error::bearer-report.json nao foi gerado: a varredura do Bearer nao rodou."
-            exit 1
-          fi
-          echo "Relatorio do Bearer gerado: $(wc -c < bearer-report.json) bytes."
-
-      - name: Gerar Resumo de Privacidade na aba Summary
+      - name: Varredura de privacidade (mapeamento de dados pessoais)
         if: always()
         run: |
-          echo "### 🔒 Relatório de Privacidade e Dados Sensíveis (Bearer CLI / LGPD)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -f bearer-report.json ]; then
-            echo "Scan concluído com sucesso. O arquivo json de evidência foi gerado nos artefatos." >> $GITHUB_STEP_SUMMARY
-          fi
+          # Evidência LGPD: não bloqueia o build (o gate está no passo de segurança acima)
+          bearer scan . --report privacy --format=json --output=bearer-privacy.json --quiet || true
 
-      - name: Publicar Relatórios de Privacidade como Artefato
+      - name: Verificar se os relatorios foram gerados
+        if: always()
+        run: |
+          for arq in bearer-report.json bearer-privacy.json; do
+            if [ ! -s "$arq" ]; then
+              echo "::error::$arq nao foi gerado: a varredura nao rodou."
+              exit 1
+            fi
+            echo "$arq gerado: $(wc -c < "$arq") bytes."
+          done
+
+      - name: Resumo de privacidade e LGPD na aba Summary
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, os
+
+          def carregar(caminho):
+              try:
+                  with open(caminho, encoding="utf-8") as f:
+                      return json.load(f)
+              except (OSError, ValueError):
+                  return None
+
+          seguranca = carregar("bearer-report.json")
+          privacidade = carregar("bearer-privacy.json")
+
+          saida = ["### Privacidade e LGPD (scanner Bearer)", ""]
+
+          # 1) Achados no codigo-fonte (vazamento de dados pessoais, sanitizacao)
+          saida.append("#### Achados no codigo-fonte")
+          if seguranca is None:
+              saida.append("Relatorio de seguranca nao encontrado.")
+          else:
+              ordem = ["critical", "high", "medium", "low", "warning"]
+              saida += ["", "| Severidade | Quantidade |", "|---|---|"]
+              for n in ordem:
+                  saida.append(f"| {n} | {len(seguranca.get(n, []))} |")
+              saida += ["", "| Severidade | Regra | Arquivo | CWE |", "|---|---|---|---|"]
+              for n in ordem:
+                  for a in seguranca.get(n, []):
+                      cwe = ", ".join(a.get("cwe_ids") or [])
+                      saida.append(
+                          f"| {n} | {a.get('title')} (`{a.get('id')}`) "
+                          f"| `{a.get('filename')}:{a.get('line_number')}` | {cwe} |"
+                      )
+
+          # 2) Dados pessoais detectados (mapeamento LGPD)
+          saida += ["", "#### Dados pessoais detectados (mapeamento LGPD)"]
+          if privacidade is None:
+              saida.append("Relatorio de privacidade nao encontrado.")
+          else:
+              saida += ["", "| Titular | Tipo de dado | Deteccoes | Falhas de regra |", "|---|---|---|---|"]
+              for s in privacidade.get("subjects", []):
+                  falhas = sum(
+                      s.get(k, 0)
+                      for k in (
+                          "critical_risk_failure_count", "high_risk_failure_count",
+                          "medium_risk_failure_count", "low_risk_failure_count",
+                      )
+                  )
+                  saida.append(
+                      f"| {s.get('subject_name')} | {s.get('name')} "
+                      f"| {s.get('detection_count')} | {falhas} |"
+                  )
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("\n".join(saida) + "\n")
+          PY
+
+      - name: Publicar relatorios de privacidade como artefato
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -220,7 +280,6 @@ jobs:
           path: |
             bearer-report.json
             bearer-privacy.json
-          
   # ==========================================
   # PARTE 3: Supply Chain Security & SBOM (Trivy / Pip-Audit)
   # ==========================================
