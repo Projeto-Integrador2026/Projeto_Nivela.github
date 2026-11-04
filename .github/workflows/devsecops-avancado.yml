@@ -184,11 +184,22 @@ jobs:
 
       - name: Instalar Bearer CLI
         run: |
-          curl -sfL https://raw.githubusercontent.com/bearer/bearer/main/ingress/install.sh | sh -s -- -b /usr/local/bin
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+          bearer version
 
       - name: Executar varredura de privacidade (Bearer)
         run: |
+          # O Bearer devolve codigo 1 quando encontra problemas; isso nao deve quebrar o job.
           bearer scan . --format=json --output=bearer-report.json || true
+
+      - name: Verificar se o relatorio do Bearer foi gerado
+        run: |
+          if [ ! -s bearer-report.json ]; then
+            echo "::error::bearer-report.json nao foi gerado: a varredura do Bearer nao rodou."
+            exit 1
+          fi
+          echo "Relatorio do Bearer gerado: $(wc -c < bearer-report.json) bytes."
 
       - name: Gerar Resumo de Privacidade na aba Summary
         if: always()
