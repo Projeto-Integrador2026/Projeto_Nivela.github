@@ -26,7 +26,7 @@ Um passo adicional verifica que os dois arquivos foram realmente gerados. Se fal
 
 Não há achados críticos, portanto o quality gate foi aprovado. Os achados de severidade alta, média e baixa não bloqueiam o build; por isso foram analisados manualmente (seção 4).
 
-**Dados pessoais mapeados no código:** e-mail (4 detecções), senha (1) e nome de usuário (1).
+**Dados pessoais mapeados no código:** e-mail (4 detecções), senha (1) e nome de usuário (1). O relatório de privacidade não apontou falhas de severidade crítica ou alta; as 4 falhas de severidade média referem-se ao e-mail em mensagens de log.
 
 ![Resumo do Bearer na aba Summary do GitHub Actions](../Evidencias/devsecops/bearer-lgpd/01-resumo-bearer.jpg)
 *Figura 1: Resumo do Bearer CLI na aba Summary da execução do workflow.*
@@ -35,14 +35,15 @@ Não há achados críticos, portanto o quality gate foi aprovado. Os achados de 
 
 | Severidade | Regra | Arquivo | Avaliação |
 |---|---|---|---|
-| Alta | `python_lang_file_permissions` | `nivela/settings.py:269` | **Falso positivo.** A linha aplica `os.chmod(logs, 0o700)`, que restringe a pasta de logs ao dono (item 5.3). É uma proteção, não uma permissão excessiva. |
-| Alta | `python_lang_path_traversal` | `nivela/logging_utils.py:40` | **Falso positivo.** O caminho aberto vem da configuração do handler em `settings.py`, não de entrada do usuário. |
-| Média (4) | `python_lang_logger` | `usuarios/signals.py:31, 41, 69, 78` | **Mitigado.** O e-mail passa por `mascarar_email()` antes de ir para o log (ex.: `b***@gmail.com`); o scanner não reconhece essa função como sanitização. O IP é gravado sem máscara, por necessidade de auditoria (itens 5.1 e 5.2). |
+| Alta | `python_lang_file_permissions` | `nivela/settings.py:269` | **Falso positivo.** A linha aplica `os.chmod(logs, 0o700)`, que restringe a pasta de logs ao dono. É uma proteção, não uma permissão excessiva. |
+| Alta | `python_lang_path_traversal` | `nivela/logging_utils.py:40` | **Falso positivo.** O caminho aberto vem da configuração do handler de log em `settings.py`, não de entrada do usuário. |
+| Média (4) | `python_lang_logger` | `usuarios/signals.py:31, 41, 69, 78` | **Mitigado.** O e-mail passa por `mascarar_email()` antes de ir para o log (ex.: `b***@gmail.com`); o scanner não reconhece essa função como sanitização. O IP é gravado sem máscara, por necessidade de auditoria (ver abaixo). |
 | Baixa | `javascript_lang_logger_leak` | `static/js/nivelamento.js:213` | **Risco baixo.** `console.error` exibe apenas o erro de uma requisição no console do navegador, sem dado pessoal. |
 
-**Sobre o IP nos logs:** o endereço IP é dado pessoal. Ele é registrado para detectar tentativas de acesso indevido, com base legal de legítimo interesse (art. 7º, IX da LGPD), conforme o inventário de dados (`lgpd-inventario-dados.md`). A estrutura dos logs está descrita em `auditoria-logs.md`.
+**Sobre o IP nos logs:** o endereço IP é registrado nos eventos de login, logout e validação de 2FA. Ele é dado pessoal, mas não é dado sensível. A finalidade é detectar tentativas de acesso indevido, com base legal de **legítimo interesse** (art. 7º, IX da LGPD), respeitando os princípios de finalidade, necessidade e segurança (art. 6º) e as medidas de segurança do art. 46. Como mitigação, o e-mail é sempre mascarado e a pasta de logs tem acesso restrito ao dono (`0o700`). O tratamento consta no inventário de dados (`lgpd-inventario-dados.md`) e a estrutura dos logs está descrita em `auditoria-logs.md`.
 
 ## 5. Limitações
 - O quality gate bloqueia somente achados **críticos**. Achados de severidade alta exigem revisão manual, como feito na seção 4.
 - O Bearer faz análise estática e não reconhece funções próprias de mascaramento, o que explica os 4 achados médios.
+- Os falsos positivos foram classificados por análise manual e continuam listados no relatório do Bearer.
 - A ferramenta não substitui a revisão jurídica da conformidade com a LGPD.
