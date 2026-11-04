@@ -294,7 +294,7 @@ jobs:
       - name: Auditoria de Dependências Python (pip-audit)
         run: |
           python3 -m pip install --upgrade pip pip-audit
-          pip-audit --desc || true
+          pip-audit -r requirements.txt --desc || true
 
       - name: Varredura de Imagem Docker e Geração de SBOM (Trivy)
         uses: aquasecurity/trivy-action@v0.36.0
