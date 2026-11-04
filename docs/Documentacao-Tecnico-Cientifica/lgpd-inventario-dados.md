@@ -13,6 +13,7 @@
 | Sessão e cookies técnicos | Gerados no login | `django_session`; cookies `sessionid` e `csrftoken` | Manter o titular autenticado e proteger os formulários | Execução de contrato (art. 7º, V) |
 | Tentativas de login | Geradas pelo django-axes | Tabelas do django-axes (usuário informado, IP, navegador, data) | Proteção contra força bruta | Legítimo interesse (art. 7º, IX) |
 | Log de recuperação de senha | Gerado pelo sistema | `logs/recuperacao_senha.log` (e-mail informado e data) | Auditoria do fluxo de recuperação | Legítimo interesse (art. 7º, IX) |
+| Log de autenticação | Gerado pelo sistema a cada login, logout e verificação 2FA | `logs/autenticacao.log` (e-mail mascarado, IP e data) | Auditoria de acessos e detecção de acesso indevido | Legítimo interesse (art. 7º, IX) |
 | Registros de acesso da hospedagem | Gerados por Render e Cloudflare | Infraestrutura de terceiros (IP, URL, navegador) | Operação e segurança da hospedagem | Legítimo interesse (art. 7º, IX) |
 | Progresso nas lições | Gerado pelo sistema conforme o titular avança | `gamificacao_progressolicao` (usuário, lição, concluída, data) | Controlar o avanço na trilha de aprendizado | Execução de contrato (art. 7º, V) |
 | Tentativas de exercícios | Geradas a cada resposta do titular | `gamificacao_tentativaexercicio` (usuário, exercício, correta, data) | Avaliar desempenho e liberar próximos módulos | Execução de contrato (art. 7º, V) |
@@ -50,15 +51,10 @@ Evidências em `docs/Evidencias/lgpd/`:
 | Sessão | Cookie HttpOnly e Secure | Até a sessão expirar |
 | Tentativas de login | Acesso restrito ao banco | A definir pelo grupo |
 | Log de recuperação de senha | Arquivo fora do repositório | Enquanto o arquivo existir |
+| Log de autenticação | Arquivo fora do repositório; e-mail mascarado; pasta com acesso restrito ao dono; hash encadeado contra adulteração | Enquanto o arquivo existir (disco efêmero no plano gratuito do Render) |
 | Registros da hospedagem | Gerenciados pelos provedores | Conforme a política de cada provedor |
 | Progresso, tentativas, perfil de gamificação e nivelamento | Acesso restrito ao banco | Enquanto a conta existir |
 | Consentimentos e solicitações | Acesso restrito ao banco | Consentimentos: apagados com a conta. Solicitações: mantidas sem dados pessoais |
-
----
-
-> Última atualização: _(20/09/2026)_
-> Responsável pela documentação: _(Beatriz Miguel)_
-
 
 ## 4. Registro explícito de consentimento (4.4)
 
@@ -74,7 +70,6 @@ Evidências em `docs/Evidencias/lgpd/`:
 - `print-consentimento-checkbox-obrigatorio.jpg`: tentativa de cadastro sem marcar o checkbox, recusada com "Este campo é obrigatório."
 - `print-consentimento-registrado-admin.jpg`: registro de consentimento criado no Admin após o cadastro com o checkbox marcado.
 
-
 ## 5. Consentimento associado à finalidade (4.5)
 
 O modelo `RegistroConsentimento` (`lgpd/models.py`) obriga cada registro a declarar
@@ -88,7 +83,6 @@ pertencer a uma dessas finalidades. O registro do item 4.4 é um exemplo prátic
 disso — a finalidade "Termos de uso e política de privacidade" fica associada
 a esse consentimento específico, visível na mesma evidência
 `print-consentimento-registrado-admin.jpg`.
-
 
 ## 6. Possibilidade de revogação do consentimento (4.6)
 
@@ -110,7 +104,6 @@ Evidências em `docs/Evidencias/lgpd/`:
 
 - `print-consentimentos-lista-antes-revogar.jpg`: tela "Meus consentimentos" com o consentimento ativo e o botão "Revogar" disponível.
 - `print-consentimentos-revogado.jpg`: mesma tela após a revogação, com status "Revogado" e data/hora registrada.
-
 
 ## 7. Registro de data e versão do consentimento (4.7)
 
@@ -135,7 +128,6 @@ Não há evidência nova para este item: as mesmas evidências dos itens 4.4 e 4
 `print-consentimentos-lista-antes-revogar.jpg` e
 `print-consentimentos-revogado.jpg`) já mostram a versão e as datas gravadas.
 
-
 ## 8. Funcionalidade de consulta aos dados do titular (4.8)
 
 - O titular logado acessa **Meus dados** (menu superior), que agora leva à tela
@@ -154,7 +146,6 @@ Evidência em `docs/Evidencias/lgpd/`:
 
 - `print-meus-dados-consulta.jpg`: tela "Meus dados" exibindo os dados da conta e de gamificação do titular logado.
 
-
 ## 9. Funcionalidade de exportação dos dados (4.9)
 
 - Na tela **Meus dados**, o titular logado tem o botão **"Baixar meus dados
@@ -172,7 +163,6 @@ Evidência em `docs/Evidencias/lgpd/`:
 Evidência em `docs/Evidencias/lgpd/`:
 
 - `print-exportacao-json.jpg`: botão de exportação na tela "Meus dados" e o conteúdo do arquivo `meus-dados-nivela.json` baixado, incluindo o histórico de consentimento do titular.
-
 
 ## 10. Funcionalidade de exclusão dos dados pessoais (4.10)
 
@@ -202,7 +192,6 @@ Evidências em `docs/Evidencias/lgpd/`:
 - `print-exclusao-senha-incorreta.jpg`: tentativa de exclusão com senha errada, recusada.
 - `print-exclusao-sucesso.jpg`: mensagem de sucesso na tela de login, com o protocolo de atendimento.
 - `print-exclusao-solicitacao-anonima.jpg`: registro em `SolicitacaoTitular` no Admin, com identificador anônimo preservado e usuário nulo.
-
 
 ## 11. Fluxo de atendimento aos direitos do titular (4.11)
 
@@ -242,5 +231,7 @@ Requisito 4 atual.
 Não há evidência nova neste item: as evidências dos itens 4.6, 4.8, 4.9 e
 4.10 já demonstram, juntas, o fluxo completo de ponta a ponta.
 
-> Última atualização: _(23/09/2026)_
-> Por _(Beatriz Mguel)_
+---
+
+> Última atualização: _(04/11/2026)_
+> Responsável pela documentação: _(Beatriz Miguel)_
