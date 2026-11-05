@@ -49,7 +49,7 @@ Evidências em `docs/Evidencias/lgpd/`:
 | Telefone | Criptografia Fernet; chave separada | Até revogar o consentimento ou excluir a conta |
 | Dados do 2FA | Acesso restrito ao banco | Até desativar o 2FA ou excluir a conta |
 | Sessão | Cookie HttpOnly e Secure | Até a sessão expirar |
-| Tentativas de login | Acesso restrito ao banco | A definir pelo grupo |
+| Tentativas de login | Acesso restrito ao banco | 6 meses; a limpeza é feita manualmente com `python manage.py axes_reset_logs --age 180` |
 | Log de recuperação de senha | Arquivo fora do repositório | Enquanto o arquivo existir |
 | Log de autenticação | Arquivo fora do repositório; e-mail mascarado; pasta com acesso restrito ao dono; hash encadeado contra adulteração | Enquanto o arquivo existir (disco efêmero no plano gratuito do Render) |
 | Registros da hospedagem | Gerenciados pelos provedores | Conforme a política de cada provedor |
