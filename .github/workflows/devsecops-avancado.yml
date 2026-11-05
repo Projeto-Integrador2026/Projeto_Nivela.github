@@ -85,6 +85,9 @@ jobs:
           docker logs nivela-web
           exit 1
 
+      # Bloqueio do ZAP: a action nativa (fail_action) trata avisos e falhas juntos.
+      # Por isso o bloqueio e feito no passo "Quality gate do DAST", que le o relatorio
+      # JSON e falha (exit 1) somente para as regras marcadas como FAIL em .zap/rules.tsv.
       - name: Executar OWASP ZAP Full Scan
         id: zap
         uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed # v0.12.0
@@ -93,6 +96,7 @@ jobs:
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
           allow_issue_writing: false
+          fail_action: false  # o bloqueio e feito no Quality gate do DAST (abaixo)
 
       - name: Resumo do scan DAST na aba do workflow
         if: always()
@@ -299,7 +303,7 @@ jobs:
           python3 -m pip install --upgrade pip pip-audit
           pip-audit -r requirements.txt --desc || true
 
-      - name: Varredura de Imagem Docker e Geração de SBOM (Trivy)
+      - name: Varredura de vulnerabilidades do repositorio (Trivy fs)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'fs'
@@ -320,6 +324,26 @@ jobs:
           scan-ref: '.'
           format: 'cyclonedx'
           output: 'sbom-cyclonedx.json'
+
+      - name: Validar conteudo do SBOM
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          with open("sbom-cyclonedx.json", encoding="utf-8") as f:
+              sbom = json.load(f)
+          componentes = [c for c in sbom.get("components", []) if c.get("type") == "library"]
+          print(f"Formato: {sbom.get('bomFormat')} {sbom.get('specVersion')}")
+          print(f"Bibliotecas listadas no SBOM: {len(componentes)}")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as s:
+              s.write("### SBOM (CycloneDX)\n\n")
+              s.write(f"- Bibliotecas listadas: **{len(componentes)}**\n\n")
+              s.write("| Componente | Versao |\n|---|---|\n")
+              for c in sorted(componentes, key=lambda c: c.get("name", "").lower()):
+                  s.write(f"| {c.get('name')} | {c.get('version')} |\n")
+          if sbom.get("bomFormat") != "CycloneDX" or not componentes:
+              print("::error::SBOM vazio ou invalido: nenhuma dependencia foi inventariada.")
+              sys.exit(1)
+          PY
 
       - name: Publicar SBOM como artefato
         if: always()
