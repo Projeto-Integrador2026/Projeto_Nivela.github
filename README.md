@@ -176,9 +176,9 @@ Toda a documentação técnica de Engenharia de Software está organizada na pas
 
 | Integrante | Função / Responsabilidade |
 | :--- | :--- |
-| **Beatriz Miguel** | Desenvolvimento Back-end, Front-end e Banco de Dados |
-| **Jhonathan Tonello** | Documentação Técnica e Especificações |
-| **Vinicius Rodrigues** |  |
+| **Beatriz Teixeira Miguel** | Desenvolvimento Back-end, Front-end e Banco de Dados |
+| **Jhonathan Silva Tonello** | Documentação Técnica e Especificações |
+| **Vinicius Rodrigues Almeida Alves** | Colaboração na Documentação e Configuração de Segurança (DevSecOps) |
 | **Prof. Fabiano M.** | Orientação e Avaliação Acadêmica (UMC) |
 
 ---

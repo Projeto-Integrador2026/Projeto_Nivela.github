@@ -5,7 +5,7 @@
 &nbsp;
 
 **BEATRIZ TEIXEIRA MIGUEL**<br>
-**JHONATHAN SILVA TONNELLO**<br>
+**JHONATHAN SILVA TONELLO**<br>
 **VINICIUS RODRIGUES ALMEIDA ALVES**
 
 &nbsp;
@@ -42,7 +42,7 @@ Repositório: https://github.com/Projeto-Integrador2026/Projeto_Nivela.github/tr
 <div style="text-align:center;">
 
 **BEATRIZ TEIXEIRA MIGUEL**<br>
-**JHONATHAN SILVA TONNELLO**<br>
+**JHONATHAN SILVA TONELLO**<br>
 **VINICIUS RODRIGUES ALMEIDA ALVES**
 
 &nbsp;
