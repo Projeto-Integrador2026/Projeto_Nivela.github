@@ -27,6 +27,8 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [X] 2.6 Registro de solicitação de recuperação em log
 - [X] 2.7 Registro de sucesso/falha do processo
 
+> **Nota sobre a Seção 2:** os itens acima estão implementados no código e cobertos por teste. Em produção, porém, o plano gratuito do Render bloqueia o envio de e-mail por SMTP, então o link de redefinição não chega ao usuário. A limitação é de infraestrutura e está registrada na Seção 9 (DEC-01 e DEC-02).
+
 ## 3. Criptografia e Comunicação Segura
 
 - [X] 3.1 Comunicação protegida por TLS/HTTPS
@@ -94,7 +96,16 @@ Checklist técnico do projeto, cobrindo autenticação, segurança, LGPD, docume
 - [ ] 8.6 Domínio técnico na apresentação
 - [ ] 8.7 Capacidade de resposta às perguntas
 
+## 9. Decisões de Projeto e Riscos Aceitos
+
+Decisões tomadas conscientemente pelo grupo que reduzem uma proteção para garantir o funcionamento do sistema. Cada uma indica o motivo, o risco residual e o plano de reversão.
+
+| ID | Decisão | Motivo | Risco residual | Mitigações existentes | Revisão prevista |
+|---|---|---|---|---|---|
+| DEC-01 (achado A-06) | O e-mail informado no cadastro **não é verificado**: a conta nasce ativa e o cadastro não envia e-mail de ativação. | O plano gratuito do Render bloqueia as portas SMTP de saída (25, 465 e 587) desde 26/09/2025. O e-mail de ativação nunca chegava e as contas ficavam inativas, impedindo o login. | **Médio.** Alguém pode cadastrar o e-mail de outra pessoa. Como o 2FA é configurado no primeiro login, quem cadastrar primeiro também registra o autenticador da conta. | 2FA obrigatório (TOTP); aceite de Termos de Uso registrado com data e versão; senha com PBKDF2; bloqueio por tentativas (django-axes); resposta idêntica para e-mail já cadastrado (A-04). | Reativar a verificação ao migrar para plano pago ou para um serviço de e-mail por API HTTP. |
+| DEC-02 | A recuperação de senha por e-mail **não entrega o link em produção**. | Mesma causa da DEC-01: SMTP bloqueado no Render Free. | **Baixo a médio.** O usuário que esquecer a senha depende de redefinição manual pelos administradores. | Fluxo implementado e testado no código (itens 2.1 a 2.7). Em desenvolvimento o e-mail é exibido no console. | Resolvida junto com a DEC-01. |
+
 ---
 
-> Última atualização: _(24/09/2026)_
+> Última atualização: _(18/10/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello)_

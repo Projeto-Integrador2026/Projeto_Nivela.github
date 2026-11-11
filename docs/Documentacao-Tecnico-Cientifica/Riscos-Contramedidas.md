@@ -20,13 +20,15 @@
 | Tratamento de dados pessoais sem consentimento explícito do titular | Tela de aceite de Termos de Uso e Política de Privacidade (RF10) | ✅ Implementado | evidências em `docs/Evidencias/lgpd/` |
 | Usuário sem controle sobre os próprios dados (violação dos direitos do titular, LGPD) | Funcionalidades de consulta, exportação e exclusão de dados pessoais (RF11, RF12) | ✅ Implementado | evidências em `docs/Evidencias/lgpd/` |
 | Retenção indevida de dados por tempo indeterminado | Política de retenção e descarte de dados definida (RNF09) | ✅ Implementado | evidências em `docs/Evidencias/lgpd/` |
-| Tratamento de dados sem consentimento explícito do titular | Cadastro sem etapa de aceite de termos | Tela de aceite de Termos de Uso e Política de Privacidade (RF10) | ✅ Implementado |
-| Ausência de controle do titular sobre os próprios dados | Titular sem meios de consultar/exportar/excluir seus dados | Funcionalidades de consulta, exportação e exclusão (RF11, RF12) | ✅ Implementado |
-| Retenção indevida de dados por tempo indeterminado | Dados mantidos sem prazo definido | Política de retenção e descarte de dados (RNF09) | ✅ Implementado |
 
-## 2. Riscos identificados, sem contramedida implementada (pendentes)
+## 2. Riscos aceitos ou com limitação conhecida
 
-Nenhum item pendente no momento. Todos os riscos mapeados até o momento possuem contramedida implementada (ver Seção 1).
+Riscos que o grupo decidiu aceitar, ou que dependem de uma limitação de infraestrutura. As decisões completas estão na Seção 9 do `checklist.md`.
+
+| Risco / Ameaça | Situação | Contramedida parcial | Status | Plano |
+|---|---|---|---|---|
+| Cadastro com o e-mail de outra pessoa, e criação do primeiro autenticador 2FA por quem cadastrou (e-mail não verificado, achado A-06) | O plano gratuito do Render bloqueia o SMTP; a verificação por e-mail foi removida e a conta nasce ativa | 2FA obrigatório; aceite de termos registrado; hash PBKDF2; bloqueio por tentativas (django-axes) | ⚠️ Risco aceito pelo grupo (DEC-01). Severidade: Média | Reativar a verificação com plano pago ou serviço de e-mail por API HTTP |
+| Usuário sem como redefinir a senha por e-mail em produção | O e-mail de redefinição não é entregue pelo mesmo bloqueio de SMTP | Fluxo implementado e testado no código (itens 2.1 a 2.7 do checklist) | ⚠️ Limitação de infraestrutura (DEC-02) | Resolvido junto com a DEC-01 |
 
 ## 3. Observações
 
@@ -36,9 +38,11 @@ A camada de segurança em trânsito (TLS 1.3, HSTS, cookies seguros e cabeçalho
 
 A criptografia de dados sensíveis em repouso foi confirmada por inspeção direta do código-fonte (`usuarios/models.py`), após atualização do repositório local via `git pull`.
 
-Os itens da LGPD (RF10, RF11, RF12, RF50, RNF09) foram confirmados por meio de evidências funcionais (`docs/Evidencias/lgpd/`);
+Os itens da LGPD (RF10, RF11, RF12, RF50, RNF09) foram confirmados por meio de evidências funcionais (`docs/Evidencias/lgpd/`).
+
+O envio de e-mail por SMTP não funciona na hospedagem atual (Render, plano gratuito), conforme o aviso do próprio provedor sobre o bloqueio das portas 25, 465 e 587. Por isso a conta criada no cadastro nasce ativa, sem e-mail de ativação, e a redefinição de senha não entrega o link em produção. A decisão e o risco residual estão na Seção 2 deste documento e na Seção 9 do `checklist.md`.
+
 ---
 
-> Última atualização: _(24/09/2026)_
+> Última atualização: _(18/10/2026)_
 > Responsável pela documentação: _(Jhonathan Tonello e Beatriz Miguel)_
->>>>>>> Stashed changes
