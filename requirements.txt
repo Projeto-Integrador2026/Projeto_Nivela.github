@@ -11,7 +11,7 @@ django-phonenumber-field==8.5.0
 django-two-factor-auth==1.18.1
 gunicorn==26.2.0
 psycopg2-binary==2.9.12
-pycparser==3.0
+pycparser==3.12
 python-decouple==3.8
 qrcode==8.2
 sqlparse==0.6.0
