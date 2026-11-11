@@ -201,7 +201,7 @@ jobs:
       - name: Varredura de seguranca e vazamento de dados no codigo
         run: |
           # Quality gate: falha o build se o código tiver vulnerabilidade crítica
-          bearer scan . --report security --format json --output bearer-report.json --quiet --fail-on-severity critical
+          bearer scan . --report security --format json --output bearer-report.json --quiet --fail-on-severity high
 
       - name: Varredura de privacidade (mapeamento de dados pessoais)
         if: always()
